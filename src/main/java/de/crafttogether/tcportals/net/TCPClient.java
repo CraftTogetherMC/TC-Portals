@@ -55,6 +55,7 @@ public class TCPClient extends Thread {
     }
 
     public TCPClient(String host, int port, UUID trainId) {
+        this.setName(TCPortals.plugin.getName() + " network thread");
         this.trainId = trainId;
 
         try {

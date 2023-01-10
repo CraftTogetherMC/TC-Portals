@@ -15,6 +15,7 @@ public class TCPServer extends Thread {
     private ArrayList<TCPClient> clients;
 
     public TCPServer(String host, int port) {
+        this.setName(TCPortals.plugin.getName() + " network thread");
         this.host = host;
         this.port = port;
         start();
