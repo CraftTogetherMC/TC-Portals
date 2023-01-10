@@ -224,9 +224,8 @@ public class PortalHandler implements Listener {
                     node.remove("lastPathNode");
 
                 // clear items if necessary
-                // TODO: remove only item container, data is also used for fuel
-                if (clearItems && node.contains("data"))
-                    node.remove("data");
+                if (clearItems && node.contains("data.contents"))
+                    node.remove("data.contents");
             }
         }
 
@@ -346,9 +345,6 @@ public class PortalHandler implements Listener {
                     PlaceholderResolver.resolver("z", targetLocation.getZ())));
             return;
         }
-
-        // TODO: Dont't use a deprecated method
-        //RailLookup.findMembersOnRail(rail.offlineBlock());
 
         // Check that the area isn't occupied by another train
         if (spawnLocations.isOccupied()) {
