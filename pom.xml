@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+
+<groupId>de.crafttogether</groupId>
+<artifactId>TCPortals</artifactId>
+<version>1.0-SNAPSHOT</version>
+<packaging>jar</packaging>
+
+<name>TCPortals</name>
+<description>TrainCarts-Addon for cross-server teleporting of trains (BungeeCord)</description>
+<url>https://github.com/CraftTogetherMC/CraftBahn</url>
+
+<properties>
+    <java.version>17</java.version>
+    <project.spigot.version>1.17.1-R0.1-SNAPSHOT</project.spigot.version>
+    <project.bkcommonlib.version>1.19.3-v1-SNAPSHOT</project.bkcommonlib.version>
+    <project.traincarts.version>1.19.3-v1-SNAPSHOT</project.traincarts.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.number>NO-CI</project.build.number>
+</properties>
+
+<profiles>
+    <profile>
+        <id>ci</id>
+        <activation>
+            <property>
+                <name>env.BUILD_NUMBER</name>
+            </property>
+        </activation>
+        <properties>
+            <project.build.number>${env.BUILD_NUMBER}</project.build.number>
+        </properties>
+    </profile>
+</profiles>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.10.1</version>
+            <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
+            </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.4.1</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <createDependencyReducedPom>false</createDependencyReducedPom>
+                <relocations>
+                    <relocation>
+                        <pattern>net.kyori</pattern>
+                        <shadedPattern>de.crafttogether.common.dep.net.kyori</shadedPattern>
+                    </relocation>
+                </relocations>
+            </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+                <execution>
+                    <id>version-less-jar</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                    <configuration>
+                        <target>
+                            <copy file="target/${project.name}-${project.version}.jar" tofile="target/static/${project.name}.jar"/>
+                            <copy file="target/${project.name}-${project.version}.jar" tofile="target/static/${project.name}-${project.version}-${project.build.number}.jar"/>
+                        </target>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+
+    <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+        </resource>
+    </resources>
+</build>
+
+<repositories>
+    <repository>
+        <id>ctogether</id>
+        <url>https://maven.craft-together-mc.de/</url>
+    </repository>
+
+    <repository>
+        <id>spigotmc-repo</id>
+        <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+
+    <repository>
+        <id>MG-Dev Jenkins CI Maven Repository</id>
+        <url>https://ci.mg-dev.eu/plugin/repository/everything</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot-api</artifactId>
+        <version>${project.spigot.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>net.kyori</groupId>
+        <artifactId>adventure-api</artifactId>
+        <version>4.12.0</version>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>net.kyori</groupId>
+        <artifactId>adventure-platform-bukkit</artifactId>
+        <version>4.2.0</version>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>net.kyori</groupId>
+        <artifactId>adventure-text-minimessage</artifactId>
+        <version>4.12.0</version>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>net.kyori</groupId>
+        <artifactId>adventure-text-serializer-legacy</artifactId>
+        <version>4.12.0</version>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>net.kyori</groupId>
+        <artifactId>adventure-text-serializer-plain</artifactId>
+        <version>4.12.0</version>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>de.crafttogether</groupId>
+        <artifactId>MySQLAdapter</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>com.bergerkiller.bukkit</groupId>
+        <artifactId>BKCommonLib</artifactId>
+        <version>${project.bkcommonlib.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>com.bergerkiller.bukkit</groupId>
+        <artifactId>TrainCarts</artifactId>
+        <version>${project.traincarts.version}</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+</project>
