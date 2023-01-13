@@ -195,6 +195,7 @@ public class TCPClient extends Thread {
         return true;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean send(String message) {
         return send(new MessagePacket(message));
     }

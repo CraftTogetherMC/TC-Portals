@@ -1,7 +1,7 @@
 package de.crafttogether.tcportals.net.packets;
 
+import de.crafttogether.common.NetworkLocation;
 import de.crafttogether.tcportals.portals.Passenger;
-import de.crafttogether.tcportals.util.CTLocation;
 
 import java.util.List;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class TrainPacket implements Packet {
     public Set<String> owners;
     public String config;
     public List<Passenger> passengers;
-    public CTLocation target;
+    public NetworkLocation target;
     public String source;
 
     public TrainPacket(UUID trainId) {

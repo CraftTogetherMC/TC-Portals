@@ -1,14 +1,14 @@
 package de.crafttogether.tcportals.util;
 
 import com.bergerkiller.bukkit.common.entity.type.CommonMinecartFurnace;
-import com.bergerkiller.bukkit.common.offline.OfflineBlock;
 import com.bergerkiller.bukkit.common.resources.SoundEffect;
 import com.bergerkiller.bukkit.common.utils.FaceUtil;
 import com.bergerkiller.bukkit.common.utils.WorldUtil;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartMember;
 import com.bergerkiller.bukkit.tc.controller.MinecartMemberStore;
-import com.bergerkiller.bukkit.tc.controller.components.*;
+import com.bergerkiller.bukkit.tc.controller.components.RailPiece;
+import com.bergerkiller.bukkit.tc.controller.components.RailState;
 import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableGroup;
 import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableMember;
 import com.bergerkiller.bukkit.tc.controller.type.MinecartMemberChest;
@@ -16,17 +16,14 @@ import com.bergerkiller.bukkit.tc.controller.type.MinecartMemberFurnace;
 import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.properties.TrainProperties;
 import com.bergerkiller.bukkit.tc.properties.TrainPropertiesStore;
-import com.bergerkiller.bukkit.tc.rails.RailLookup;
 import com.bergerkiller.bukkit.tc.utils.TrackMovingPoint;
-import com.bergerkiller.bukkit.tc.utils.TrackWalkingPoint;
-import de.crafttogether.TCPortals;
+import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
+import de.crafttogether.common.localization.Placeholder;
+import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.localization.PlaceholderResolver;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.*;
@@ -40,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TCHelper {
-    public static final TCPortals plugin = TCPortals.plugin;
-
     public static void displayError(SignActionEvent info) {
         BlockFace facingInv = info.getFacing().getOppositeFace();
         Location effectLocation = info.getSign().getLocation()
@@ -178,24 +173,24 @@ public class TCHelper {
             dropChestedHorseItems(member);
     }
 
-    public static void sendMessage(MinecartMember<?> member, Localization localization, PlaceholderResolver... arguments) {
+    public static void sendMessage(MinecartMember<?> member, Localization localization, Placeholder... arguments) {
         for (Player passenger : getPlayerPassengers(member))
             localization.message(passenger, arguments);
     }
 
-    public static void sendMessage(MinecartGroup group, Localization localization, PlaceholderResolver... arguments) {
+    public static void sendMessage(MinecartGroup group, Localization localization, Placeholder... arguments) {
         for (Player passenger : getPlayerPassengers(group))
             localization.message(passenger, arguments);
     }
 
     public static void sendMessage(MinecartMember<?> member, Component message) {
         for (Player passenger : getPlayerPassengers(member))
-            plugin.adventure().player(passenger).sendMessage(message);
+            PluginUtil.adventure().player(passenger).sendMessage(message);
     }
 
     public static void sendMessage(MinecartGroup group, Component message) {
         for (Player passenger : getPlayerPassengers(group))
-            plugin.adventure().player(passenger).sendMessage(message);
+            PluginUtil.adventure().player(passenger).sendMessage(message);
     }
 
     public static MinecartMember<?> getOccupyingMember(SpawnableGroup.SpawnLocationList spawnLocations) {
@@ -247,10 +242,7 @@ public class TCHelper {
             }
         }
 
-        if (collidingMembers.size() < 1)
-            return true;
-
-        return false;
+        return collidingMembers.size() < 1;
     }
 
     public static String groupToString(MinecartGroup group) {

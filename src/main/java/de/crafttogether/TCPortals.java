@@ -1,20 +1,18 @@
 package de.crafttogether;
 
-import de.crafttogether.mysql.MySQLAdapter;
-import de.crafttogether.mysql.MySQLConfig;
+import de.crafttogether.common.dep.net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import de.crafttogether.common.localization.LocalizationManager;
+import de.crafttogether.common.mysql.MySQLAdapter;
+import de.crafttogether.common.mysql.MySQLConfig;
+import de.crafttogether.common.update.BuildType;
+import de.crafttogether.common.update.UpdateChecker;
 import de.crafttogether.tcportals.Localization;
+import de.crafttogether.tcportals.commands.Commands;
 import de.crafttogether.tcportals.listener.*;
-import de.crafttogether.tcportals.localization.LocalizationManager;
 import de.crafttogether.tcportals.portals.PortalHandler;
 import de.crafttogether.tcportals.portals.PortalStorage;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Objects;
 
 public final class TCPortals extends JavaPlugin {
     public static TCPortals plugin;
@@ -25,12 +23,10 @@ public final class TCPortals extends JavaPlugin {
     private PortalStorage portalStorage;
     private PortalHandler portalHandler;
     private BukkitAudiences adventure;
-    private MiniMessage miniMessageParser;
 
     @Override
     public void onEnable() {
         plugin = this;
-        adventure = BukkitAudiences.create(this);
 
         /* Check dependencies */
         if (!getServer().getPluginManager().isPluginEnabled("BKCommonLib")) {
@@ -52,9 +48,13 @@ public final class TCPortals extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SignBreakListener(), this);
         getServer().getPluginManager().registerEvents(new TrainExitListener(), this);
         getServer().getPluginManager().registerEvents(new TrainMoveListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerSpawnListener(), this);
         getServer().getPluginManager().registerEvents(new CreatureSpawnListener(), this);
         getServer().getPluginManager().registerEvents(new ConnectionErrorListener(), this);
+
+        // Register Commands
+        new Commands();
 
         // Register PluginChannel
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -81,12 +81,10 @@ public final class TCPortals extends JavaPlugin {
         mySQLAdapter = new MySQLAdapter(this, myCfg);
 
         // Initialize LocalizationManager
-        localizationManager = new LocalizationManager();
+        localizationManager = new LocalizationManager(this, Localization.class,
+                getConfig().getString("Settings.Language"), "en_EN", "locales");
 
-        // Set Tags/Placeholder for MiniMessage
-        miniMessageParser = MiniMessage.builder()
-                .editTags(t -> t.resolver(TagResolver.resolver("prefix", Tag.selfClosingInserting(Localization.PREFIX.deserialize()))))
-                .build();
+        localizationManager.addTagResolver("prefix", Localization.PREFIX.deserialize());
 
         // Initialize Storage
         portalStorage = new PortalStorage();
@@ -94,6 +92,24 @@ public final class TCPortals extends JavaPlugin {
         // Initialize PortalHandler
         portalHandler = new PortalHandler(getConfig().getString("Portals.Server.BindAddress"), getConfig().getInt("Portals.Server.Port"));
         portalHandler.registerActionSigns();
+
+        // Check for updates
+        if (!getConfig().getBoolean("Settings.Updates.Notify.DisableNotifications")
+                && getConfig().getBoolean("Settings.Updates.Notify.Console"))
+        {
+            new UpdateChecker(this).checkUpdatesAsync((String version, String build, String fileName, Integer fileSize, String url, String currentVersion, String currentBuild, BuildType buildType) -> {
+                switch (buildType) {
+                    case RELEASE -> plugin.getLogger().warning("A new full version of this plugin was released!");
+                    case SNAPSHOT -> plugin.getLogger().warning("A new snapshot version of this plugin is available!");
+                }
+
+                plugin.getLogger().warning("You can download it here: " + url);
+                plugin.getLogger().warning("Version: " + version + " #" + build);
+                plugin.getLogger().warning("FileName: " + fileName + " FileSize: " + UpdateChecker.humanReadableFileSize(fileSize));
+                plugin.getLogger().warning("You are on version: " + currentVersion + " #" + currentBuild);
+
+            }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"));
+        }
 
         getLogger().info(getDescription().getName() + " v" + getDescription().getVersion() + " enabled.");
     }
@@ -132,15 +148,5 @@ public final class TCPortals extends JavaPlugin {
 
     public PortalHandler getPortalHandler() {
         return portalHandler;
-    }
-
-    public MiniMessage getMiniMessageParser() {
-        return Objects.requireNonNullElseGet(miniMessageParser, MiniMessage::miniMessage);
-    }
-
-    public BukkitAudiences adventure() {
-        if (adventure == null)
-            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
-        return adventure;
     }
 }

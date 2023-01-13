@@ -7,11 +7,11 @@ import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.SignActionType;
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions;
 import de.crafttogether.TCPortals;
+import de.crafttogether.common.NetworkLocation;
+import de.crafttogether.common.localization.Placeholder;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.localization.PlaceholderResolver;
 import de.crafttogether.tcportals.portals.Portal;
 import de.crafttogether.tcportals.portals.PortalHandler;
-import de.crafttogether.tcportals.util.CTLocation;
 import de.crafttogether.tcportals.util.TCHelper;
 import de.crafttogether.tcportals.util.Util;
 
@@ -74,7 +74,7 @@ public class SignActionPortal extends SignAction {
                     .collect(Collectors.toList());
         } catch (SQLException e) {
             Localization.ERROR_DATABASE.message(event.getPlayer(),
-                    PlaceholderResolver.resolver("error", e.getMessage()));
+                    Placeholder.set("error", e.getMessage()));
 
             e.printStackTrace();
             TCHelper.displayError(event);
@@ -87,11 +87,11 @@ public class SignActionPortal extends SignAction {
             // First sign created
             if (portals.size() == 0) {
                 Localization.PORTAL_CREATE_BIDIRECTIONAL_INFO_FIRST.message(event.getPlayer(),
-                        PlaceholderResolver.resolver("name", portalName));
+                        Placeholder.set("name", portalName));
             }
 
             // Sign updated
-            else if (portals.get(0).getTargetLocation().equals(CTLocation.fromBukkitLocation(event.getLocation()))) {
+            else if (portals.get(0).getTargetLocation().equals(NetworkLocation.fromBukkitLocation(event.getLocation(), plugin.getServerName()))) {
                 // TODO: Handle sign-updates
                 Util.debug("Sign update");
                 return true;
@@ -109,12 +109,12 @@ public class SignActionPortal extends SignAction {
                 }
 
                 Localization.PORTAL_CREATE_BIDIRECTIONAL_INFO_SECOND.message(event.getPlayer(),
-                        PlaceholderResolver.resolver("name", portal.getName()),
-                        PlaceholderResolver.resolver("server", portal.getTargetLocation().getServer()),
-                        PlaceholderResolver.resolver("world", portal.getTargetLocation().getWorld()),
-                        PlaceholderResolver.resolver("x", String.valueOf(portal.getTargetLocation().getX())),
-                        PlaceholderResolver.resolver("y", String.valueOf(portal.getTargetLocation().getY())),
-                        PlaceholderResolver.resolver("z", String.valueOf(portal.getTargetLocation().getZ())));
+                        Placeholder.set("name", portal.getName()),
+                        Placeholder.set("server", portal.getTargetLocation().getServer()),
+                        Placeholder.set("world", portal.getTargetLocation().getWorld()),
+                        Placeholder.set("x", String.valueOf(portal.getTargetLocation().getX())),
+                        Placeholder.set("y", String.valueOf(portal.getTargetLocation().getY())),
+                        Placeholder.set("z", String.valueOf(portal.getTargetLocation().getZ())));
             }
 
             // Save to database
@@ -124,10 +124,10 @@ public class SignActionPortal extends SignAction {
                         Portal.PortalType.BIDIRECTIONAL,
                         plugin.getConfig().getString("Portals.Server.PublicAddress"),
                         plugin.getConfig().getInt("Portals.Server.Port"),
-                        CTLocation.fromBukkitLocation(event.getLocation()));
+                        NetworkLocation.fromBukkitLocation(event.getLocation(), plugin.getServerName()));
             } catch (SQLException e) {
                 Localization.ERROR_DATABASE.message(event.getPlayer(),
-                        PlaceholderResolver.resolver("error", e.getMessage()));
+                        Placeholder.set("error", e.getMessage()));
 
                 e.printStackTrace();
                 TCHelper.displayError(event);
@@ -135,13 +135,13 @@ public class SignActionPortal extends SignAction {
             }
 
             Localization.PORTAL_CREATE_BIDIRECTIONAL_SUCCESS.message(event.getPlayer(),
-                    PlaceholderResolver.resolver("name", portalName));
+                    Placeholder.set("name", portalName));
         }
 
         // There are already two signs
         else {
             Localization.PORTAL_CREATE_BIDIRECTIONAL_EXISTS.message(event.getPlayer(),
-                    PlaceholderResolver.resolver("name", portalName));
+                    Placeholder.set("name", portalName));
             TCHelper.displayError(event);
             return false;
         }

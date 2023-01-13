@@ -17,8 +17,10 @@ import com.bergerkiller.bukkit.tc.rails.RailLookup;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.generated.net.minecraft.world.entity.EntityHandle;
 import de.crafttogether.TCPortals;
+import de.crafttogether.common.NetworkLocation;
+import de.crafttogether.common.localization.Placeholder;
+import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.localization.PlaceholderResolver;
 import de.crafttogether.tcportals.net.TCPClient;
 import de.crafttogether.tcportals.net.TCPServer;
 import de.crafttogether.tcportals.net.events.EntityReceivedEvent;
@@ -28,7 +30,6 @@ import de.crafttogether.tcportals.net.packets.TrainPacket;
 import de.crafttogether.tcportals.signactions.SignActionPortal;
 import de.crafttogether.tcportals.signactions.SignActionPortalIn;
 import de.crafttogether.tcportals.signactions.SignActionPortalOut;
-import de.crafttogether.tcportals.util.CTLocation;
 import de.crafttogether.tcportals.util.PollingTask;
 import de.crafttogether.tcportals.util.TCHelper;
 import de.crafttogether.tcportals.util.Util;
@@ -101,7 +102,7 @@ public class PortalHandler implements Listener {
                     .collect(Collectors.toList());
         } catch (SQLException e) {
             TCHelper.sendMessage(group, Localization.ERROR_DATABASE,
-                    PlaceholderResolver.resolver("error", e.getMessage()));
+                    Placeholder.set("error", e.getMessage()));
             e.printStackTrace();
             return;
         }
@@ -113,7 +114,7 @@ public class PortalHandler implements Listener {
 
         if (portal == null || portal.getTargetLocation() == null) {
             TCHelper.sendMessage(group, Localization.PORTAL_ENTER_NOEXIT,
-                    PlaceholderResolver.resolver("name", portalName));
+                    Placeholder.set("name", portalName));
             return;
         }
 
@@ -303,22 +304,22 @@ public class PortalHandler implements Listener {
         if (targetWorld == null) {
             Util.debug("World '" + packet.target.getWorld() + "' was not found!");
             Passenger.error(packet.id, Localization.PORTAL_EXIT_WORLDNOTFOUND.deserialize(
-                    PlaceholderResolver.resolver("world", packet.target.getWorld())));
+                    Placeholder.set("world", packet.target.getWorld())));
             return;
         }
 
         // Portal not found
-        CTLocation targetLocation = packet.target;
+        NetworkLocation targetLocation = packet.target;
         Portal portal = plugin.getPortalStorage().getPortal(targetLocation.getBukkitLocation());
 
         if (portal == null || portal.getSign() == null) {
             Util.debug("Could not find a Portal at " + targetLocation.getWorld() + ", " + targetLocation.getX() + ", " + targetLocation.getY() + ", " + targetLocation.getZ());
             Passenger.error(packet.id, Localization.PORTAL_EXIT_SIGNNOTFOUND.deserialize(
-                    PlaceholderResolver.resolver("name", packet.portal),
-                    PlaceholderResolver.resolver("world", packet.target.getWorld()),
-                    PlaceholderResolver.resolver("x", packet.target.getX()),
-                    PlaceholderResolver.resolver("y", packet.target.getY()),
-                    PlaceholderResolver.resolver("z", packet.target.getZ())));
+                    Placeholder.set("name", packet.portal),
+                    Placeholder.set("world", packet.target.getWorld()),
+                    Placeholder.set("x", packet.target.getX()),
+                    Placeholder.set("y", packet.target.getY()),
+                    Placeholder.set("z", packet.target.getZ())));
             return;
         }
 
@@ -327,10 +328,10 @@ public class PortalHandler implements Listener {
         if (rail == null || rail.block() == null) {
             Util.debug("Could not find a Rail at " + targetLocation.getWorld() + ", " + targetLocation.getX() + ", " + targetLocation.getY() + ", " + targetLocation.getZ());
             Passenger.error(packet.id, Localization.PORTAL_EXIT_NORAILS.deserialize(
-                    PlaceholderResolver.resolver("world", targetLocation.getWorld()),
-                    PlaceholderResolver.resolver("x", targetLocation.getX()),
-                    PlaceholderResolver.resolver("y", targetLocation.getY()),
-                    PlaceholderResolver.resolver("z", targetLocation.getZ())));
+                    Placeholder.set("world", targetLocation.getWorld()),
+                    Placeholder.set("x", targetLocation.getX()),
+                    Placeholder.set("y", targetLocation.getY()),
+                    Placeholder.set("z", targetLocation.getZ())));
             return;
         }
 
@@ -339,10 +340,10 @@ public class PortalHandler implements Listener {
         if (spawnLocations == null) {
             Util.debug("Could not find the right spot to spawn a train at " + rail.world() + ", " + rail.block().getX() + ", " + rail.block().getY() + ", " + rail.block().getZ());
             Passenger.error(packet.id, Localization.PORTAL_EXIT_NOSPAWNLOCATION.deserialize(
-                    PlaceholderResolver.resolver("world", targetLocation.getWorld()),
-                    PlaceholderResolver.resolver("x", targetLocation.getX()),
-                    PlaceholderResolver.resolver("y", targetLocation.getY()),
-                    PlaceholderResolver.resolver("z", targetLocation.getZ())));
+                    Placeholder.set("world", targetLocation.getWorld()),
+                    Placeholder.set("x", targetLocation.getX()),
+                    Placeholder.set("y", targetLocation.getY()),
+                    Placeholder.set("z", targetLocation.getZ())));
             return;
         }
 
@@ -357,10 +358,10 @@ public class PortalHandler implements Listener {
                 else {
                     Util.debug("Track is occupied by another train at " + rail.world() + ", " + rail.block().getX() + ", " + rail.block().getY() + ", " + rail.block().getZ());
                     Passenger.error(packet.id, Localization.PORTAL_EXIT_TRACKOCCUPIED.deserialize(
-                            PlaceholderResolver.resolver("world", targetLocation.getWorld()),
-                            PlaceholderResolver.resolver("x", targetLocation.getX()),
-                            PlaceholderResolver.resolver("y", targetLocation.getY()),
-                            PlaceholderResolver.resolver("z", targetLocation.getZ())));
+                            Placeholder.set("world", targetLocation.getWorld()),
+                            Placeholder.set("x", targetLocation.getX()),
+                            Placeholder.set("y", targetLocation.getY()),
+                            Placeholder.set("z", targetLocation.getZ())));
                     return;
                 }
             }
@@ -391,15 +392,6 @@ public class PortalHandler implements Listener {
             // Load the chunks first
             Util.loadChunks(spawnLocations, 2, 5);
 
-            /*if (TCPortals.plugin.getConfig().getBoolean("Settings.Debug")) {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (!player.hasPermission("tcportals.debug")) continue;
-
-                    for (SpawnableMember.SpawnLocation spawnLoc : spawnLocations.locations)
-                        player.spawnParticle(Particle.BARRIER, spawnLoc.location, 1);
-                }
-            }*/
-
             // Spawn
             MinecartGroup group = queuedTrain.getSpawnableGroup().spawn(spawnLocations);
             queuedTrain.setSpawnedGroup(group);
@@ -407,7 +399,7 @@ public class PortalHandler implements Listener {
             // Tell passengers
             Passenger.setTrainName(packet.id, group.getProperties().getTrainName());
 
-            // Avoid conflicts with other recently spawned trains, restore will be restoed later
+            // Avoid conflicts with other recently spawned trains, restore will be restored later
             if (group.hasFuel())
                 queuedTrain.setFuelMap(TCHelper.getFuelMap(group, true));
 
@@ -421,7 +413,7 @@ public class PortalHandler implements Listener {
             for (TrainStatus status : group.getStatusInfo()) {
                 if (status instanceof TrainStatus.WaitingForTrain) {
                     for (MinecartMember<?> member : group)
-                        if (member.getActions().getStatusInfo().remove(status));
+                        member.getActions().getStatusInfo().remove(status);
                 }
             }
 
@@ -605,7 +597,7 @@ public class PortalHandler implements Listener {
         // Check if some error occurred
         if (passenger.hasError()) {
             Bukkit.getScheduler().runTaskLater(TCPortals.plugin, () -> {
-                plugin.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
+                PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());
             }, 20L);
 
@@ -618,7 +610,7 @@ public class PortalHandler implements Listener {
         if (group == null) {
             Util.debug("Could not find train (" + passenger.getTrainName() + ") for player " + player.getName());
             Localization.PORTAL_EXIT_NOTRAIN.message(player,
-                    PlaceholderResolver.resolver("train", passenger.getTrainName()));
+                    Placeholder.set("train", passenger.getTrainName()));
             return;
         }
 

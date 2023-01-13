@@ -7,8 +7,8 @@ import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.SignActionType;
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions;
 import de.crafttogether.TCPortals;
+import de.crafttogether.common.localization.Placeholder;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.localization.PlaceholderResolver;
 import de.crafttogether.tcportals.portals.Portal;
 import de.crafttogether.tcportals.portals.PortalHandler;
 import de.crafttogether.tcportals.util.TCHelper;
@@ -68,7 +68,7 @@ public class SignActionPortalIn extends SignAction {
                     .collect(Collectors.toList());
         } catch (SQLException e) {
             Localization.ERROR_DATABASE.message(event.getPlayer(),
-                    PlaceholderResolver.resolver("error", e.getMessage()));
+                    Placeholder.set("error", e.getMessage()));
 
             e.printStackTrace();
             TCHelper.displayError(event);
@@ -77,10 +77,10 @@ public class SignActionPortalIn extends SignAction {
 
         if (portals.size() < 1)
             Localization.PORTAL_CREATE_IN_NOTEXIST.message(event.getPlayer(),
-                    PlaceholderResolver.resolver("name", portalName));
+                    Placeholder.set("name", portalName));
 
         Localization.PORTAL_CREATE_IN_SUCCESS.message(event.getPlayer(),
-                PlaceholderResolver.resolver("name", portalName));
+                Placeholder.set("name", portalName));
 
         SignBuildOptions.create()
                 .setName("ServerPortal-Entrance").setDescription("allow trains to travel between servers" + ((event.getLine(3).equalsIgnoreCase("clear")) ? ".\n§eChest-Minecarts will be cleared" : ""))

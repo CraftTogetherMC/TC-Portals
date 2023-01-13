@@ -1,10 +1,9 @@
 package de.crafttogether.tcportals.portals;
 
-import de.crafttogether.Callback;
 import de.crafttogether.TCPortals;
-import de.crafttogether.mysql.MySQLAdapter;
-import de.crafttogether.mysql.MySQLConnection;
-import de.crafttogether.tcportals.util.CTLocation;
+import de.crafttogether.common.NetworkLocation;
+import de.crafttogether.common.mysql.MySQLAdapter;
+import de.crafttogether.common.mysql.MySQLConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -98,7 +97,7 @@ public class PortalStorage {
         return found;
     }
 
-    public Portal create(String name, Portal.PortalType type, String host, int port, CTLocation location) throws SQLException {
+    public Portal create(String name, Portal.PortalType type, String host, int port, NetworkLocation location) throws SQLException {
         MySQLConnection MySQL = MySQLAdapter.getConnection();
 
         int portalId = MySQL.insert("INSERT INTO `%sportals` SET " +
@@ -120,7 +119,7 @@ public class PortalStorage {
         return portal;
     }
 
-    public void update(Portal portal, Callback<SQLException, Integer> callback) {
+    public void update(Portal portal, MySQLConnection.Consumer<SQLException, Integer> consumer) {
         MySQLConnection MySQL = MySQLAdapter.getConnection();
 
         MySQL.updateAsync("UPDATE `%sportals` SET " +
@@ -142,36 +141,36 @@ public class PortalStorage {
             // Update cache
             portals.put(portal.getId(), portal);
 
-            callback.call(err, affectedRows);
+            consumer.operation(err, affectedRows);
             MySQL.close();
         }, MySQL.getTablePrefix(), MySQL.getTablePrefix(), portal.getId());
     }
 
-    public void delete(int portalId, Callback<SQLException, Integer> callback) {
+    public void delete(int portalId, MySQLConnection.Consumer<SQLException, Integer> consumer) {
         MySQLConnection MySQL = MySQLAdapter.getConnection();
 
         MySQL.updateAsync("DELETE FROM `%sportals` WHERE `id` = %s", (err, affectedRows) -> {
             if (err != null) {
                 plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
-                callback.call(err, null);
+                consumer.operation(err, null);
             }
             else {
                 // Update cache
                 portals.remove(portalId);
-                callback.call(null, affectedRows);
+                consumer.operation(null, affectedRows);
             }
 
             MySQL.close();
         }, MySQL.getTablePrefix(), portalId);
     }
 
-    public void loadAll(Callback<SQLException, Collection<Portal>> callback) {
+    public void loadAll(MySQLConnection.Consumer<SQLException, Collection<Portal>> consumer) {
         MySQLConnection MySQL = MySQLAdapter.getConnection();
 
         MySQL.queryAsync("SELECT * FROM `%sportals`", (err, result) -> {
             if (err != null) {
                 plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
-                callback.call(err, null);
+                consumer.operation(err, null);
             }
 
             else {
@@ -191,7 +190,7 @@ public class PortalStorage {
                     MySQL.close();
                 }
 
-                callback.call(err, portals.values());
+                consumer.operation(err, portals.values());
             }
         }, MySQL.getTablePrefix());
     }
@@ -200,7 +199,7 @@ public class PortalStorage {
         Portal portal = null;
 
         try {
-            CTLocation targetLocation = new CTLocation(
+            NetworkLocation targetLocation = new NetworkLocation(
                     result.getString("target_server"),
                     result.getString("target_world"),
                     result.getDouble("target_x"),

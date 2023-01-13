@@ -12,6 +12,7 @@
 - ~~Handle trains with fueled furnace-minecarts~~
 - ~~Restore collision-property~~
 - Restore wait-distance-property
+- Try to make portal-queue asynchronous
 - Handle editing of signs correctly
 - Translate Localization.class
 - TC-Coasters?

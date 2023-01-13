@@ -1,8 +1,13 @@
 name: TCPortals
 version: '${project.version}'
+build: '${project.build.number}'
 main: de.crafttogether.TCPortals
 api-version: 1.17
 depend: [ BKCommonLib, Train_Carts ]
 authors: [ J0schlZ, Ceddix ]
 description: TrainCarts-Addon for cross-server teleporting of trains (BungeeCord)
 website: https://github.com/CraftTogetherMC
+commands:
+  tcportals:
+    description: Shows the current version of the plugin and informations about updates
+    usage: /tcportals

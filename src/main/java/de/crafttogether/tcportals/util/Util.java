@@ -4,11 +4,12 @@ import com.bergerkiller.bukkit.common.chunk.ForcedChunk;
 import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableGroup;
 import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableMember;
 import de.crafttogether.TCPortals;
+import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
+import de.crafttogether.common.dep.net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import de.crafttogether.common.dep.net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import de.crafttogether.common.localization.Placeholder;
+import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.localization.PlaceholderResolver;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -24,12 +25,13 @@ public class Util {
     public static boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {
             Localization.ERROR_NOPERMISSION.message(sender,
-                    PlaceholderResolver.resolver("permission", permission));
+                    Placeholder.set("permission", permission));
             return false;
         }
         return true;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static List<ForcedChunk> loadChunks(SpawnableGroup.SpawnLocationList spawnLocations, int surrounding, int unloadDelaySeconds) {
         List<ForcedChunk> forcedChunks = new ArrayList<>();
         spawnLocations.loadChunks();
@@ -74,7 +76,7 @@ public class Util {
         if (broadcast) {
             for (Player player : Bukkit.getOnlinePlayers())
                 if (!player.hasPermission("tcportals.debug"))
-                plugin.adventure().player(player).sendMessage(messageComponent);
+                    PluginUtil.adventure().player(player).sendMessage(messageComponent);
         }
 
         plugin.getLogger().info(PlainTextComponentSerializer.plainText().serialize(messageComponent));

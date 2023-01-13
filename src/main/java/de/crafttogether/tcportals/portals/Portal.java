@@ -2,7 +2,7 @@ package de.crafttogether.tcportals.portals;
 
 import com.bergerkiller.bukkit.common.utils.BlockUtil;
 import com.bergerkiller.bukkit.tc.SignActionHeader;
-import de.crafttogether.tcportals.util.CTLocation;
+import de.crafttogether.common.NetworkLocation;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -13,13 +13,14 @@ public class Portal {
     private PortalType type;
     private String targetHost;
     private Integer targetPort;
-    private CTLocation targetLocation;
+    private NetworkLocation targetLocation;
 
+    @SuppressWarnings("unused")
     public enum PortalType {
         IN, OUT, BIDIRECTIONAL
     }
 
-    public Portal(String name, PortalType type, Integer id, String targetHost, Integer targetPort, CTLocation targetLocation) {
+    public Portal(String name, PortalType type, Integer id, String targetHost, Integer targetPort, NetworkLocation targetLocation) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -35,7 +36,7 @@ public class Portal {
     public PortalType getType() { return this.type; }
     public String getTargetHost() { return targetHost; }
     public Integer getTargetPort() { return targetPort; }
-    public CTLocation getTargetLocation() { return targetLocation; }
+    public NetworkLocation getTargetLocation() { return targetLocation; }
 
     public void setId(Integer id) { this.id = id; }
     public void setName(String name) { this.name = name; }
@@ -44,7 +45,7 @@ public class Portal {
     }
     public void setTargetHost(String targetHost) { this.targetHost = targetHost; }
     public void setTargetPort(Integer targetPort) { this.targetPort = targetPort; }
-    public void setTargetLocation(CTLocation targetLocation) { this.targetLocation = targetLocation; }
+    public void setTargetLocation(NetworkLocation targetLocation) { this.targetLocation = targetLocation; }
 
     public static boolean isValid(Sign sign) {
         SignActionHeader actionSign = SignActionHeader.parseFromSign(sign);

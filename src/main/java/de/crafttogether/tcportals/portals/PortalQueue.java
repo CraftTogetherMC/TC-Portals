@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+
 public class PortalQueue {
 
     private final Portal portal;
@@ -20,6 +21,7 @@ public class PortalQueue {
 
     private BukkitTask task;
 
+    @SuppressWarnings("unused")
     interface Consumer {
         boolean operation(QueuedTrain next);
     }

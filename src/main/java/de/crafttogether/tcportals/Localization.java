@@ -1,7 +1,8 @@
 package de.crafttogether.tcportals;
 
 import de.crafttogether.TCPortals;
-import de.crafttogether.tcportals.localization.LocalizationEnum;
+import de.crafttogether.common.localization.LocalizationEnum;
+import de.crafttogether.common.localization.LocalizationManager;
 
 public class Localization extends LocalizationEnum {
     public static final Localization PREFIX = new Localization("prefix", "<gold>TC-Portals </gold><dark_gray>» </dark_gray>");
@@ -33,12 +34,26 @@ public class Localization extends LocalizationEnum {
     public static final Localization PORTAL_CREATE_BIDIRECTIONAL_INFO_FIRST = new Localization("portal.create.bidirectional.info.first", "<prefix/><gold>Hinweis:</gold> <red>Es wurde noch kein zweites Portal für den Kanal </red> <yellow>{name}</yellow> <red>erstellt.</red>");
     public static final Localization PORTAL_CREATE_BIDIRECTIONAL_INFO_SECOND = new Localization("portal.create.bidirectional.info.second", "<prefix/><gold>Hinweis:</gold> <yellow>Das andere Portal befindet sich<newLine>in der Welt: </yellow><gold>{world}</gold> <yellow>auf dem Server: </yellow><gold>{server}</gold><newLine><yellow>Koordinaten:</yellow> <gold>{x}, {y}, {z}</gold>");
 
+    public static final Localization UPDATE_LASTBUILD = new Localization("update.lastBuild", "<prefix/><green>Your installed version is up to date</green>");
+    public static final Localization UPDATE_RELEASE = new Localization("update.devBuild", """
+            <hover:show_text:'<green>Click here to download this version'><click:open_url:'{url}'><prefix/><green>A new full version was released!</green>
+            <prefix/><green>Version: </green><yellow>{version} #{build}</yellow>
+            <prefix/><green>FileName: </green><yellow>{fileName}</yellow>
+            <prefix/><green>FileSize: </green><yellow>{fileSize}</yellow>
+            <prefix/><red>You are on version: </red><yellow>{currentVersion} #{currentBuild}</yellow></click></hover>""");
+    public static final Localization UPDATE_DEVBUILD = new Localization("update.release", """
+            <hover:show_text:'<green>Click here to download this version'><click:open_url:'{url}'><prefix/><green>A new snapshot build is available!</green>
+            <prefix/><green>Version: </green><yellow>{version} #{build}</yellow>
+            <prefix/><green>FileName: </green><yellow>{fileName}</yellow>
+            <prefix/><green>FileSize: </green><yellow>{fileSize}</yellow>
+            <prefix/><red>You are on version: </red><yellow>{currentVersion} #{currentBuild}</yellow></click></hover>""");
+
     private Localization(String name, String defValue) {
         super(name, defValue);
     }
 
     @Override
-    public String get() {
-        return TCPortals.plugin.getLocalizationManager().getLocale(this.getName());
+    public LocalizationManager getManager() {
+        return TCPortals.plugin.getLocalizationManager();
     }
 }
