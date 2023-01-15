@@ -27,7 +27,7 @@ There are some flags you can use on the fourth line of each portal-sign to contr
 - `-mobs` mobs are ejected
 - `-items` items are dropped
 
-## Pathfinding across servers
+## Pathfinding across servers (BungeeCord)
 With a little extra work, it is possible to reach destinations on another server.
 
 For example, if you want to drive from server1 to a destination on server2,  
