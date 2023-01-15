@@ -20,6 +20,15 @@ Also, a lot of appreciation goes to the People behind [Cloud](https://github.com
 | ![](https://i.imgur.com/Aevpead.png) | **Directional Portal** *(Entrance)*<br/><br/>This sign represents a portal entrance.<br/>A portal of this type requires a `portal-out`-sign that has the same channel name.<br/>Any number of `portal-in`-signs can be created for one channel. |
 | ![](https://i.imgur.com/VJEQ2fP.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
 
+The signs behave like ordinary traincarts signs.  
+You can de/activate them with redstone, alter trigger-directions, etc.  
+
+A portal exit behaves like a [spawn sign](https://wiki.traincarts.net/p/TrainCarts/Signs/Spawner), so you must set a direction for it like you do with the spawn sign.  
+The spawn direction can be set by specifying trigger directions.  
+For example: [train:left] or [train:right]. If none is set, the train is spawned based on what side is powered by redstone.  
+  
+If you use [cart] instead of [train] a train will be spawned at the exit cart by cart.  
+
 ### Flags
 There are some flags you can use on the fourth line of a portal-sign to control whether itens and mobs are transported.  
 You can use them at the entrance as well as at the exit or both.
