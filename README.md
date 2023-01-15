@@ -60,7 +60,6 @@ If you use [TC-Destinations](https://github.com/CraftTogetherMC/TC-Destinations)
 - [BKCommonLib](https://github.com/bergerhealer) (Extensive plugin library)
 - [Adventure](https://docs.adventure.kyori.net) (Very neat UI-Framework for Bukkit/Bungeecord and more)
 - [MiniMessage](https://docs.adventure.kyori.net/minimessage) (Text format to represent chat components)
-- [Cloud](https://github.com/Incendo/cloud) (Command Framework)
 - [HikariCP](https://github.com/brettwooldridge/HikariCP) (High-performance, JDBC connection pool)
 - [MySQL Connector/J](https://github.com/mysql/mysql-connector-j) (JDBC-Driver)
 
