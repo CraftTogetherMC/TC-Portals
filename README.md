@@ -47,8 +47,8 @@ For example, if you want to drive from server1 to a destination on server2,
 you need to create a [destination](https://wiki.traincarts.net/p/TrainCarts/Signs/Destination) on server1 that leads to the portal, which leads to server2.  
 Let's name it server2 as well.  
   
-Now you create a [route](https://wiki.traincarts.net/p/TrainCarts/PathFinding#Route_Manager) for the train, which first contains `server2` 
-and then the destination you want to reach.  
+Now you create a [route](https://wiki.traincarts.net/p/TrainCarts/PathFinding#Route_Manager) for the train, which first contain the destination: `server2` 
+and then afterwards, the destination you want to reach.
   
 Thats it!
   
