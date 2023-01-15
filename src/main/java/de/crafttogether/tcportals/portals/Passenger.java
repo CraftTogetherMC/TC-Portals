@@ -7,6 +7,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,5 +109,13 @@ public class Passenger implements Serializable {
         if (passengers.containsKey(uuid))
             return passengers.get(uuid);
         return null;
+    }
+
+    public static ConcurrentHashMap<UUID, Passenger> passengers() {
+        return passengers;
+    }
+
+    public static ConcurrentHashMap<UUID, Passenger> errors() {
+        return errors();
     }
 }

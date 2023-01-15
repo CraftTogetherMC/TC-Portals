@@ -1,6 +1,7 @@
 package de.crafttogether.tcportals.util;
 
 import com.bergerkiller.bukkit.common.entity.type.CommonMinecartFurnace;
+import com.bergerkiller.bukkit.common.resources.ParticleType;
 import com.bergerkiller.bukkit.common.resources.SoundEffect;
 import com.bergerkiller.bukkit.common.utils.FaceUtil;
 import com.bergerkiller.bukkit.common.utils.WorldUtil;
@@ -226,7 +227,8 @@ public class TCHelper {
 
             int walked_distance = 0;
             while (walker.hasNext() && walked_distance - 1 < lookAhead) {
-                rails.add(walker.currentRailPiece);
+                if (!rails.contains(walker.currentRailPiece))
+                    rails.add(walker.currentRailPiece);
                 walker.next();
                 walked_distance++;
             }

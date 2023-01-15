@@ -21,6 +21,7 @@ public class ConnectionErrorListener implements Listener {
                         Placeholder.set("host", event.getTargetHost()),
                         Placeholder.set("port", event.getTargetPort())));
                 plugin.getLogger().warning("(" + trainName + ") A connection to " + event.getTargetHost() + ":" + event.getTargetPort() +" could not be established");
+                plugin.getLogger().warning("Maybe the server is offline or behind a firewall?");
             }
 
             case NO_REMOTE_CONNECTIONS ->  {
@@ -28,6 +29,7 @@ public class ConnectionErrorListener implements Listener {
                         Placeholder.set("host", event.getTargetHost()),
                         Placeholder.set("port", event.getTargetPort())));
                 plugin.getLogger().warning("(" + trainName + ") A connection to " + event.getTargetHost() + ":" + event.getTargetPort() + " was refused, because remote connections are not allowed!");
+                plugin.getLogger().warning("Please check your config.yml!");
             }
 
             case NOT_AUTHENTICATED -> {

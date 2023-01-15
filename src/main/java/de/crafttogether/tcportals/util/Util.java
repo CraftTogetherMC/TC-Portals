@@ -22,6 +22,7 @@ import java.util.List;
 public class Util {
     public static final TCPortals plugin = TCPortals.plugin;
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {
             Localization.ERROR_NOPERMISSION.message(sender,

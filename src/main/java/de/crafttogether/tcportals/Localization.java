@@ -47,6 +47,7 @@ public class Localization extends LocalizationEnum {
             <prefix/><green>FileName: </green><yellow>{fileName}</yellow>
             <prefix/><green>FileSize: </green><yellow>{fileSize}</yellow>
             <prefix/><red>You are on version: </red><yellow>{currentVersion} #{currentBuild}</yellow></click></hover>""");
+    public static final Localization UPDATE_ERROR = new Localization("update.error", "<prefix/><hover:show_text:'<white>{error}'><red>Unable to retrieve update informations</red></hover>");
 
     private Localization(String name, String defValue) {
         super(name, defValue);

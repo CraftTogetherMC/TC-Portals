@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -51,6 +52,10 @@ public class PortalQueue {
             return;
 
         task = Bukkit.getScheduler().runTaskTimer(TCPortals.plugin, this::processQueue, 0L, 1L);
+    }
+
+    public List<QueuedTrain> getQueuedTrains() {
+        return queue.stream().toList();
     }
 
     public void cancel() {

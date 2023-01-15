@@ -25,13 +25,13 @@ CREATE TABLE `tc_portals` (
     `id` int(11) NOT NULL,
     `name` varchar(16) NOT NULL,
     `type` varchar(16) NOT NULL,
-    `target_host` varchar(128) DEFAULT NULL,
-    `target_port` int(11) DEFAULT NULL,
-    `target_server` varchar(128) DEFAULT NULL,
-    `target_world` varchar(128) DEFAULT NULL,
-    `target_x` double DEFAULT NULL,
-    `target_y` double DEFAULT NULL,
-    `target_z` double DEFAULT NULL
+    `host` varchar(128) DEFAULT NULL,
+    `port` int(11) DEFAULT NULL,
+    `server` varchar(128) DEFAULT NULL,
+    `world` varchar(128) DEFAULT NULL,
+    `x` double DEFAULT NULL,
+    `y` double DEFAULT NULL,
+    `z` double DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

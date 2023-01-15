@@ -76,10 +76,8 @@ public class TCPClient extends Thread {
             ex.printStackTrace();
         }
 
-        if (connection != null && connection.isConnected() && objOutputStream != null) {
-            //Util.debug("[TCPClient]: Successfully connected to " + host + ":" + port, false);
+        if (connection != null && connection.isConnected() && objOutputStream != null)
             start();
-        }
     }
 
     @Override
@@ -95,7 +93,6 @@ public class TCPClient extends Thread {
             boolean authenticated = false;
 
             while (objInputStream != null && (inputPacket = objInputStream.readObject()) != null) {
-                //Util.debug("[TCPClient]: Packet received: " + inputPacket.getClass().getTypeName() + " " + inputPacket.getClass().getName());
 
                 // First packet has to be our secretKey
                 if (!authenticated && inputPacket instanceof AuthenticationPacket packet) {
@@ -116,8 +113,8 @@ public class TCPClient extends Thread {
 
                         try {
                             error = Error.valueOf(message);
-                        } catch (IllegalArgumentException ignored) {
-                            Util.debug("Unkown error occured: " + message);
+                        } catch (IllegalArgumentException e) {
+                            Util.debug("Unkown error occured: " + e.getMessage());
                         }
 
                         Event event = new ConnectionErrorEvent(error, trainId, getAddress(), connection.getPort());
@@ -180,8 +177,6 @@ public class TCPClient extends Thread {
             objOutputStream.reset();
             objOutputStream.writeObject(packet);
             objOutputStream.flush();
-
-            //Util.debug("[TCPClient]: Packet was sent: " + packet.getClass().getTypeName() + " " + packet.getClass().getName());
         }
         catch (SocketException e) {
             Util.debug(e.getMessage());

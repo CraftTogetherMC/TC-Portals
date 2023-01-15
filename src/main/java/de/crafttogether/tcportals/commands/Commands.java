@@ -3,23 +3,23 @@ package de.crafttogether.tcportals.commands;
 import de.crafttogether.TCPortals;
 import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
 import de.crafttogether.common.localization.Placeholder;
-import de.crafttogether.common.update.BuildType;
 import de.crafttogether.common.update.UpdateChecker;
 import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.util.Util;
-import org.bukkit.ChatColor;
+import de.crafttogether.tcportals.portals.Passenger;
+import de.crafttogether.tcportals.portals.PortalQueue;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.Configuration;
+import org.bukkit.command.TabExecutor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Commands implements CommandExecutor {
+public class Commands implements TabExecutor {
     private static final TCPortals plugin = TCPortals.plugin;
 
     public Commands() {
@@ -28,53 +28,104 @@ public class Commands implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        plugin.getLogger().info("Run command");
+        if (args.length > 0 && args[0].equals("debug")) {
+            Component message = Component.empty();
 
-        new UpdateChecker(plugin).checkUpdatesAsync((String version, String build, String fileName, Integer fileSize, String url, String currentVersion, String currentBuild, BuildType buildType) -> {
-            List<Placeholder> resolvers = new ArrayList<>();
-            Component message = null;
+            if (args.length == 1)
+                message = null;
 
-            switch (buildType) {
-                case RELEASE, SNAPSHOT -> {
-                    resolvers.add(Placeholder.set("version", version));
-                    resolvers.add(Placeholder.set("build", build));
-                    resolvers.add(Placeholder.set("fileName", fileName));
-                    resolvers.add(Placeholder.set("fileSize", UpdateChecker.humanReadableFileSize(fileSize)));
-                    resolvers.add(Placeholder.set("url", url));
-                    resolvers.add(Placeholder.set("currentVersion", currentVersion));
-                    resolvers.add(Placeholder.set("currentBuild", currentBuild));
+            else {
+                if (args[1].equalsIgnoreCase("queuedTrains")) {
+                    int queuedTrains = 0;
 
-                    switch (buildType) {
-                        case RELEASE -> Localization.UPDATE_RELEASE.deserialize(resolvers);
-                        case SNAPSHOT -> Localization.UPDATE_DEVBUILD.deserialize(resolvers);
-                    }
+                    for (PortalQueue portalQueue : plugin.getPortalHandler().getPortalQueues().values())
+                        queuedTrains += portalQueue.getQueuedTrains().size();
+
+                    message = Component.text("There are " + plugin.getPortalHandler().getPortalQueues().values().size() + " open PortalQueues");
+                    message = message.append(Component.text("With a total of " + queuedTrains + " queued."));
                 }
+                else if (args[1].equalsIgnoreCase("receivedTrains"))
+                    message = Component.text("There are " + plugin.getPortalHandler().getReceivedTrains().values().size() + " receivedTrains cached");
 
-                case UP2DATE -> {
-                    resolvers.add(Placeholder.set("currentVersion", currentVersion));
-                    resolvers.add(Placeholder.set("currentBuild", currentBuild));
+                else if (args[1].equalsIgnoreCase("pendingTeleports"))
+                    message = Component.text("There are " + plugin.getPortalHandler().getPendingTeleports().values().size() + " pendingTeleports cached");
 
-                    Configuration pluginDescription = PluginUtil.getPluginFile(plugin);
-                    String buildNumber = pluginDescription.getString("build");
-                    sender.sendMessage(ChatColor.GREEN + "TCDestinations version: " + plugin.getDescription().getVersion() + " #" + buildNumber);
+                else if (args[1].equalsIgnoreCase("passengers"))
+                    message = Component.text("There are " + Passenger.passengers().values().size() + " passengers cached");
 
-                    message = plugin.getLocalizationManager().miniMessage()
-                            .deserialize("<prefix/><gold>TCPortals version: </gold><yellow>" + currentVersion + " #" + currentBuild + "</yellow><newLine/>")
-                            .append(Localization.UPDATE_LASTBUILD.deserialize(resolvers));
-                }
+                else if (args[1].equalsIgnoreCase("errors"))
+                    message = Component.text("There are " + Passenger.errors().values().size() + " errors cached");
             }
 
-            if (message != null)
+            if (message != null) {
                 PluginUtil.adventure().sender(sender).sendMessage(message);
-            else
-                Util.debug("message is null");
+                return true;
+            }
+        }
 
+        new UpdateChecker(plugin).checkUpdatesAsync((err, build, currentVersion, currentBuild) -> {
+            if (err != null)
+                err.printStackTrace();
+
+            List<Placeholder> resolvers = new ArrayList<>();
+            Component message;
+
+            if (build == null) {
+                resolvers.add(Placeholder.set("currentVersion", currentVersion));
+                resolvers.add(Placeholder.set("currentBuild", currentBuild));
+
+                message = plugin.getLocalizationManager().miniMessage()
+                        .deserialize("<prefix/><gold>" + plugin.getName() + " version: </gold><yellow>" + currentVersion + " #" + currentBuild + "</yellow><newLine/>");
+
+                if (err == null)
+                    message = message.append(Localization.UPDATE_LASTBUILD.deserialize(resolvers));
+                else
+                    message = message.append(Localization.UPDATE_ERROR.deserialize(
+                            Placeholder.set("error", err.getMessage())));
+            }
+
+            else {
+                resolvers.add(Placeholder.set("version", build.getVersion()));
+                resolvers.add(Placeholder.set("build", build.getNumber()));
+                resolvers.add(Placeholder.set("fileName", build.getFileName()));
+                resolvers.add(Placeholder.set("fileSize", build.getHumanReadableFileSize()));
+                resolvers.add(Placeholder.set("url", build.getUrl()));
+                resolvers.add(Placeholder.set("currentVersion", currentVersion));
+                resolvers.add(Placeholder.set("currentBuild", currentBuild));
+
+                message = switch (build.getType()) {
+                    case RELEASE -> Localization.UPDATE_RELEASE.deserialize(resolvers);
+                    case SNAPSHOT -> Localization.UPDATE_DEVBUILD.deserialize(resolvers);
+                };
+            }
+
+            PluginUtil.adventure().sender(sender).sendMessage(message);
         }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"));
 
         return true;
     }
 
-    public void registerCommand(String cmd, CommandExecutor executor) {
+    public void registerCommand(String cmd, TabExecutor executor) {
         Objects.requireNonNull(plugin.getCommand(cmd)).setExecutor(executor);
+        Objects.requireNonNull(plugin.getCommand(cmd)).setTabCompleter(executor);
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (args.length == 1)
+            suggestions.add("debug");
+
+        if (args.length == 2) {
+            suggestions.add("queuedTrains");
+            suggestions.add("receivedTrains");
+            suggestions.add("portalQueue");
+            suggestions.add("passenger");
+            suggestions.add("errors");
+        }
+
+        return suggestions;
     }
 }

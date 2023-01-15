@@ -668,18 +668,15 @@ public class PortalHandler implements Listener {
         TCPClient.closeAll();
     }
 
-    public String getTag(Portal portal) {
-        Sign sign = portal.getSign();
-        if (sign == null) return null;
-        return StringUtil.blockToString(sign.getBlock());
-    }
-
-
     public Map<MinecartGroup, PendingTeleport> getPendingTeleports() {
         return pendingTeleports;
     }
 
     public ConcurrentHashMap<MinecartGroup, ReceivedTrain> getReceivedTrains() {
         return receivedTrains;
+    }
+
+    public ConcurrentHashMap<Location, PortalQueue> getPortalQueues() {
+        return portalQueues;
     }
 }
