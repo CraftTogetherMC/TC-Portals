@@ -48,7 +48,8 @@ you need to create a [destination](https://wiki.traincarts.net/p/TrainCarts/Sign
 Let's name it server2 as well.  
   
 Now you create a [route](https://wiki.traincarts.net/p/TrainCarts/PathFinding#Route_Manager) for the train, which first contain the destination: `server2` 
-and then afterwards, the destination you want to reach.
+and then afterwards,  
+the destination you want to reach.
   
 Thats it!
   
