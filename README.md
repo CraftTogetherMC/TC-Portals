@@ -1,4 +1,4 @@
-# TC-Destinations
+# TC-Portals
 #### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts), [CTCommons](https://github.com/CraftTogetherMC/CTCommons) and a MySQL-Database
 
 
