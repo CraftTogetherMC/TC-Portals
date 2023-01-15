@@ -21,7 +21,8 @@ Also, a lot of appreciation goes to the People behind [Cloud](https://github.com
 | ![](https://i.imgur.com/3UlGw1q.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
 
 ### Flags
-There are some flags you can use on the fourth line of each portal-sign to control whether itens and mobs are transported.
+There are some flags you can use on the fourth line of a portal-sign to control whether itens and mobs are transported.  
+You can use them at the entrance as well as at the exit or both.
 - `!mobs` mobs are killed
 - `!items` items are killed
 - `-mobs` mobs are ejected
