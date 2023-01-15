@@ -16,9 +16,9 @@ Also, a lot of appreciation goes to the People behind [Cloud](https://github.com
 
 |                                      |                                                                                                                                                                                                                                                 |
 |:-------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ![](https://i.imgur.com/LnmPAAy.png) | **Bidirectional Portal**<br/><br/>This sign represents a portal entrance and exit at the same time.<br/>A pair of these signs that have the same channel name can be passed from either side.<br/>The other sign acts as a portal exit.         |
-| ![](https://i.imgur.com/ybuisvC.png) | **Directional Portal** *(Entrance)*<br/><br/>This sign represents a portal entrance.<br/>A portal of this type requires a `portal-out`-sign that has the same channel name.<br/>Any number of `portal-in`-signs can be created for one channel. |
-| ![](https://i.imgur.com/3UlGw1q.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
+| ![](https://i.imgur.com/EPwpDDO.png) | **Bidirectional Portal**<br/><br/>This sign represents a portal entrance and exit at the same time.<br/>A pair of these signs that have the same channel name can be passed from either side.<br/>The other sign acts as a portal exit.         |
+| ![](https://i.imgur.com/Aevpead.png) | **Directional Portal** *(Entrance)*<br/><br/>This sign represents a portal entrance.<br/>A portal of this type requires a `portal-out`-sign that has the same channel name.<br/>Any number of `portal-in`-signs can be created for one channel. |
+| ![](https://i.imgur.com/VJEQ2fP.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
 
 ### Flags
 There are some flags you can use on the fourth line of a portal-sign to control whether itens and mobs are transported.  
