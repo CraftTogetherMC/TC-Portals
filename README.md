@@ -1,5 +1,5 @@
-# TC-Portals
-#### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts)
+# TC-Destinations
+#### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts), [CTCommons](https://github.com/CraftTogetherMC/CTCommons) and a MySQL-Database
 
 
 TC-Portals is a plugin for minecraft servers using [SpigotMC](https://www.spigotmc.org), [PaperMC](https://papermc.io) or forks of these projects.  
@@ -21,10 +21,9 @@ Also, a lot of appreciation goes to the People behind [Cloud](https://github.com
 | ![](https://i.imgur.com/3UlGw1q.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
 
 ### Libraries used
+- [CTCommons](https://github.com/CraftTogetherMC/CTCommons) (CraftTogether's plugin library)
 - [BKCommonLib](https://github.com/bergerhealer) (Extensive plugin library)
-- [Cloud](https://github.com/Incendo/cloud) (Command Framework)
 - [Adventure](https://github.com/KyoriPowered/adventure) (UI Framework)
-
 
 ### MySQL Table-structure:
 
