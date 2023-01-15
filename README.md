@@ -14,11 +14,7 @@ Also, a lot of appreciation goes to the People behind [Cloud](https://github.com
   
 [![](https://i.imgur.com/SzkHTE8.png)](https://www.youtube.com/watch?v=8XCvmY8EPtk)  
 
-|                                      |                                                                                                                                                                                                                                                 |
-|:-------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ![](https://i.imgur.com/EPwpDDO.png) | **Bidirectional Portal**<br/><br/>This sign represents a portal entrance and exit at the same time.<br/>A pair of these signs that have the same channel name can be passed from either side.<br/>The other sign acts as a portal exit.         |
-| ![](https://i.imgur.com/Aevpead.png) | **Directional Portal** *(Entrance)*<br/><br/>This sign represents a portal entrance.<br/>A portal of this type requires a `portal-out`-sign that has the same channel name.<br/>Any number of `portal-in`-signs can be created for one channel. |
-| ![](https://i.imgur.com/VJEQ2fP.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
+## ActionSigns
 
 The signs behave like ordinary traincarts signs.  
 You can de/activate them with redstone, alter trigger-directions, etc.  
@@ -28,6 +24,13 @@ The spawn direction can be set by specifying trigger directions.
 For example: [train:left] or [train:right]. If none is set, the train is spawned based on what side is powered by redstone.  
   
 If you use [cart] instead of [train] a train will be spawned at the exit cart by cart.  
+
+### Signs
+|                                      |                                                                                                                                                                                                                                                 |
+|:-------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ![](https://i.imgur.com/EPwpDDO.png) | **Bidirectional Portal**<br/><br/>This sign represents a portal entrance and exit at the same time.<br/>A pair of these signs that have the same channel name can be passed from either side.<br/>The other sign acts as a portal exit.         |
+| ![](https://i.imgur.com/Aevpead.png) | **Directional Portal** *(Entrance)*<br/><br/>This sign represents a portal entrance.<br/>A portal of this type requires a `portal-out`-sign that has the same channel name.<br/>Any number of `portal-in`-signs can be created for one channel. |
+| ![](https://i.imgur.com/VJEQ2fP.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
 
 ### Flags
 There are some flags you can use on the fourth line of a portal-sign to control whether itens and mobs are transported.  
@@ -51,7 +54,7 @@ Thats it!
   
 If you use [TC-Destinations](https://github.com/CraftTogetherMC/TC-Destinations) to manage your destinations, it will do the routing part for you.
 
-### Libraries used
+## Libraries used
 - [CTCommons](https://github.com/CraftTogetherMC/CTCommons) (CraftTogether's plugin library)
 - [BKCommonLib](https://github.com/bergerhealer) (Extensive plugin library)
 - [Adventure](https://github.com/KyoriPowered/adventure) (UI Framework)
