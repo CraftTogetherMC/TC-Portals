@@ -5,6 +5,8 @@
 TC-Portals is a plugin for minecraft servers using [SpigotMC](https://www.spigotmc.org), [PaperMC](https://papermc.io) or forks of these projects.  
 It serves as an add-on for the [TrainCarts](https://github.com/bergerhealer/TrainCarts) plugin which adds ActionSigns, supporting cross-server teleporting of trains in a BungeeCord network.
 
+This plugin is very lightweight as database queries and network connections run asynchronously where possible.
+
 This plugin was developed for the [CraftTogetherMC](https://github.com/CraftTogetherMC) minecraft-server, see also: [TC-Destinations](https://github.com/CraftTogetherMC/TC-Destinations)!
 
 ### A big thank you and lots of love go out to [TeamBergerhealer](https://github.com/bergerhealer)
