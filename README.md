@@ -21,9 +21,9 @@ You can de/activate them with redstone, alter trigger-directions, etc.
 
 A portal exit behaves like a [spawn sign](https://wiki.traincarts.net/p/TrainCarts/Signs/Spawner), so you must set a direction for it like you do with the spawn sign.  
 The spawn direction can be set by specifying trigger directions.  
-For example: [train:left] or [train:right]. If none is set, the train is spawned based on what side is powered by redstone.  
+For example: `[train:left]` or `[train:right]`. If none is set, the train is spawned based on what side is powered by redstone.  
   
-If you use [cart] instead of [train] a train will be spawned at the exit cart by cart.  
+If you use `[cart]` instead of `[train]`, a train will be spawned at the exit cart by cart.  
 
 ### Signs
 |                                      |                                                                                                                                                                                                                                                 |
@@ -35,10 +35,10 @@ If you use [cart] instead of [train] a train will be spawned at the exit cart by
 ### Flags
 There are some flags you can use on the fourth line of a portal-sign to control whether itens and mobs are transported.  
 You can use them at the entrance as well as at the exit or both.
-- `!mobs` mobs are killed
-- `!items` items are killed
-- `-mobs` mobs are ejected
-- `-items` items are dropped
+- `!mobs` means mobs are killed
+- `!items` means items are killed
+- `-mobs` means mobs are ejected
+- `-items` means items are dropped
 
 ## Pathfinding across servers (BungeeCord)
 With a little extra work, it is possible to reach destinations on another server.
@@ -47,7 +47,7 @@ For example, if you want to drive from server1 to a destination on server2,
 you need to create a [destination](https://wiki.traincarts.net/p/TrainCarts/Signs/Destination) on server1 that leads to the portal, which leads to server2.  
 Let's name it server2 as well.  
   
-Now you create a [route](https://wiki.traincarts.net/p/TrainCarts/PathFinding#Route_Manager) for the train, which first contains server2 
+Now you create a [route](https://wiki.traincarts.net/p/TrainCarts/PathFinding#Route_Manager) for the train, which first contains `server2` 
 and then the destination you want to reach.  
   
 Thats it!
