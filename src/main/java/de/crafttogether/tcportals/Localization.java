@@ -7,6 +7,8 @@ import de.crafttogether.common.localization.LocalizationManager;
 public class Localization extends LocalizationEnum {
     public static final Localization PREFIX = new Localization("prefix", "<gold>TC-Portals </gold><dark_gray>» </dark_gray>");
 
+    public static final Localization CONFIG_RELOADED = new Localization("config.reloaded", "<prefix/><green>Configuration reloaded.</green>");
+
     public static final Localization ERROR_NOPERMISSION = new Localization("error.noPermission", "<hover:show_text:'<red>{permission}'><red>You do not have permission, ask an admin to do this for you.</red></hover>");
     public static final Localization ERROR_DATABASE = new Localization("error.database", "<prefix/><hover:show_text:'<white>{error}'><red>An error occurred. Please contact an administrator.</red></hover>");
 

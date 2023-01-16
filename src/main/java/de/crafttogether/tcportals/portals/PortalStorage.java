@@ -16,22 +16,32 @@ import java.util.TreeMap;
 
 @SuppressWarnings("UnusedReturnValue")
 public class PortalStorage {
-    private final MySQLAdapter mySQLAdapter;
     private final TCPortals plugin = TCPortals.plugin;
-    private final TreeMap<Integer, Portal> portals = new TreeMap<>();
+
+    private MySQLAdapter mySQLAdapter;
+    private TreeMap<Integer, Portal> portals;
 
     public PortalStorage() {
+        this.connect();
+    }
+
+    public void connect() {
+        if (this.isActive())
+            return;
+
+        this.portals = new TreeMap<>();
+
         // Initialize MySQLAdapter
-        mySQLAdapter = new MySQLAdapter(plugin,
-                plugin.getConfig().getString("MySQL.Host"),
-                plugin.getConfig().getInt("MySQL.Port"),
-                plugin.getConfig().getString("MySQL.Username"),
-                plugin.getConfig().getString("MySQL.Password"),
-                plugin.getConfig().getString("MySQL.Database"),
-                plugin.getConfig().getString("MySQL.TablePrefix"));
+        this.mySQLAdapter = new MySQLAdapter(plugin,
+                this.plugin.getConfig().getString("MySQL.Host"),
+                this.plugin.getConfig().getInt("MySQL.Port"),
+                this.plugin.getConfig().getString("MySQL.Username"),
+                this.plugin.getConfig().getString("MySQL.Password"),
+                this.plugin.getConfig().getString("MySQL.Database"),
+                this.plugin.getConfig().getString("MySQL.TablePrefix"));
 
         // Create Tables if missing
-        MySQLConnection connection = mySQLAdapter.getConnection();
+        MySQLConnection connection = this.mySQLAdapter.getConnection();
         if (connection == null)
             return;
 
@@ -39,7 +49,7 @@ public class PortalStorage {
         try (ResultSet result = connection.query("SHOW TABLES LIKE '%sportals';", connection.getTablePrefix())) {
 
             if (result != null && !result.next()) {
-                plugin.getLogger().info("[MySQL]: Create Table '" + connection.getTablePrefix() + "portals' ...");
+                this.plugin.getLogger().info("[MySQL]: Create Table '" + connection.getTablePrefix() + "portals' ...");
 
                 connection.execute("""
                     CREATE TABLE `%sportals` (
@@ -69,22 +79,37 @@ public class PortalStorage {
             }
         }
         catch (SQLException ex) {
-            plugin.getLogger().warning("[MySQL]: " + ex.getMessage());
+            this.plugin.getLogger().warning("[MySQL]: " + ex.getMessage());
         }
         finally {
             connection.close();
         }
 
         // Load all portals from database into our cache
-        Bukkit.getServer().getScheduler().runTask(plugin, () -> loadAll((err, portals) -> {
+        Bukkit.getServer().getScheduler().runTask(this.plugin, () -> loadAll((err, portals) -> {
             if (err != null)
                 return;
 
-            plugin.getLogger().info("Loaded " + portals.size() + " Portals");
+            this.plugin.getLogger().info("Loaded " + portals.size() + " Portals");
 
             // Remove not existing signs from database
-            Bukkit.getServer().getScheduler().runTask(plugin, this::checkSigns);
+            Bukkit.getServer().getScheduler().runTask(this.plugin, this::checkSigns);
         }));
+    }
+
+    public boolean isActive() {
+        if (this.mySQLAdapter == null)
+            return false;
+
+        return this.mySQLAdapter.isActive();
+    }
+
+    public void disconnect() {
+        if (this.mySQLAdapter == null)
+            return;
+
+        this.mySQLAdapter.disconnect();
+        this.mySQLAdapter = null;
     }
 
     public List<Portal> get(String portalName) throws SQLException {
@@ -100,7 +125,7 @@ public class PortalStorage {
                 found.add(portal);
 
                 // Update cache
-                portals.put(portal.getId(), portal);
+                this.portals.put(portal.getId(), portal);
             }
         }
 
@@ -109,7 +134,7 @@ public class PortalStorage {
     }
 
     public Portal create(String name, Portal.PortalType type, String host, int port, NetworkLocation location) throws SQLException {
-        MySQLConnection connection = mySQLAdapter.getConnection();
+        MySQLConnection connection = this.mySQLAdapter.getConnection();
 
         int portalId = connection.insert("INSERT INTO `%sportals` SET " +
                 "`name` = '" + name + "', " +
@@ -126,12 +151,12 @@ public class PortalStorage {
         Portal portal = new Portal(name, type, portalId, host, port, location);
 
         // Update cache
-        portals.put(portalId, portal);
+        this.portals.put(portalId, portal);
         return portal;
     }
 
     public void update(Portal portal, MySQLConnection.Consumer<SQLException, Integer> consumer) {
-        MySQLConnection connection = mySQLAdapter.getConnection();
+        MySQLConnection connection = this.mySQLAdapter.getConnection();
 
         connection.updateAsync("UPDATE `%sportals` SET " +
                 "`name`             = '" + portal.getName() + "', " +
@@ -146,28 +171,31 @@ public class PortalStorage {
                 "WHERE `%sportals`.`id` = %s;",
 
         (err, affectedRows) -> {
-            if (err != null)
-                plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
+            if (err != null) {
+                this.plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
+                consumer.operation(err, null);
+            }
+            else {
+                // Update cache
+                this.portals.put(portal.getId(), portal);
+                consumer.operation(null, 0);
+            }
 
-            // Update cache
-            portals.put(portal.getId(), portal);
-
-            consumer.operation(err, affectedRows);
             connection.close();
         }, connection.getTablePrefix(), connection.getTablePrefix(), portal.getId());
     }
 
     public void delete(int portalId, MySQLConnection.Consumer<SQLException, Integer> consumer) {
-        MySQLConnection connection = mySQLAdapter.getConnection();
+        MySQLConnection connection = this.mySQLAdapter.getConnection();
 
         connection.updateAsync("DELETE FROM `%sportals` WHERE `id` = %s", (err, affectedRows) -> {
             if (err != null) {
-                plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
+                this.plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
                 consumer.operation(err, null);
             }
             else {
                 // Update cache
-                portals.remove(portalId);
+                this.portals.remove(portalId);
                 consumer.operation(null, affectedRows);
             }
 
@@ -176,11 +204,13 @@ public class PortalStorage {
     }
 
     public void loadAll(MySQLConnection.Consumer<SQLException, Collection<Portal>> consumer) {
-        MySQLConnection connection = mySQLAdapter.getConnection();
+        MySQLConnection connection = this.mySQLAdapter.getConnection();
+
+        this.portals = new TreeMap<>();
 
         connection.queryAsync("SELECT * FROM `%sportals`", (err, result) -> {
             if (err != null) {
-                plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
+                this.plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
                 consumer.operation(err, null);
             }
 
@@ -191,17 +221,17 @@ public class PortalStorage {
 
                         // Update cache
                         if (portal != null)
-                            portals.put(portal.getId(), portal);
+                            this.portals.put(portal.getId(), portal);
                     }
                 } catch (SQLException ex) {
                     err = ex;
-                    plugin.getLogger().warning("[MySQL]: Error: " + ex.getMessage());
+                    this.plugin.getLogger().warning("[MySQL]: Error: " + ex.getMessage());
                 }
                 finally {
                     connection.close();
                 }
 
-                consumer.operation(err, portals.values());
+                consumer.operation(err, this.portals.values());
             }
         }, connection.getTablePrefix());
     }
@@ -226,26 +256,26 @@ public class PortalStorage {
                     targetLocation);
         }
         catch (Exception err) {
-            plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
+            this.plugin.getLogger().warning("[MySQL]: Error: " + err.getMessage());
         }
 
         return portal;
     }
 
     public void checkSigns() {
-        List<Portal> localPortals = portals.values().stream()
-                .filter(portal -> portal.getTargetLocation().getServer().equals(plugin.getServerName()))
+        List<Portal> localPortals = this.portals.values().stream()
+                .filter(portal -> portal.getTargetLocation().getServer().equals(this.plugin.getServerName()))
                 .toList();
 
         for (Portal portal : localPortals) {
             if (portal.getSign() != null) continue;
             delete(portal.getId(), (err, rows) ->
-                    plugin.getLogger().info("Deleted portal '" + portal.getName() + "' because action-sign doesn't exist anymore."));
+                    this.plugin.getLogger().info("Deleted portal '" + portal.getName() + "' because action-sign doesn't exist anymore."));
         }
     }
 
     public Collection<Portal> getPortals() {
-        return portals.values();
+        return this.portals.values();
     }
 
     public Portal getPortal(String name) {
@@ -257,28 +287,16 @@ public class PortalStorage {
     }
 
     public Portal getPortal(int id) {
-        for (Portal portal : portals.values())
+        for (Portal portal : this.portals.values())
             if (portal.getId().equals(id)) return portal;
         return null;
     }
 
     public Portal getPortal(Location location) {
-        for (Portal portal : portals.values()) {
-            if (!portal.getTargetLocation().getServer().equals(TCPortals.plugin.getServerName())) continue;
+        for (Portal portal : this.portals.values()) {
+            if (!portal.getTargetLocation().getServer().equals(this.plugin.getServerName())) continue;
             if (portal.getTargetLocation().getBukkitLocation().equals(location)) return portal;
         }
         return null;
-    }
-
-    public boolean isActive() {
-        if (mySQLAdapter == null)
-            return false;
-        return mySQLAdapter.isActive();
-    }
-
-    public void close() {
-        if (mySQLAdapter == null)
-            return;
-        mySQLAdapter.disconnect();
     }
 }

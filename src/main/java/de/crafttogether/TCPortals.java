@@ -3,6 +3,7 @@ package de.crafttogether;
 import de.crafttogether.common.dep.org.bstats.bukkit.Metrics;
 import de.crafttogether.common.localization.LocalizationManager;
 import de.crafttogether.common.update.UpdateChecker;
+import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
 import de.crafttogether.tcportals.commands.Commands;
 import de.crafttogether.tcportals.listener.*;
@@ -65,9 +66,8 @@ public final class TCPortals extends JavaPlugin {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         // Initialize LocalizationManager
-        localizationManager = new LocalizationManager(this, Localization.class,
-                getConfig().getString("Settings.Language"), "en_EN", "locales");
-
+        localizationManager = new LocalizationManager(this, Localization.class, "en_EN", "locales");
+        localizationManager.loadLocalization(getConfig().getString("Settings.Language"));
         localizationManager.addTagResolver("prefix", Localization.PREFIX.deserialize());
 
         // Initialize Storage
@@ -112,14 +112,15 @@ public final class TCPortals extends JavaPlugin {
         // bStats
         new Metrics(this, 17418);
 
-        getLogger().info(plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion() + " enabled.");
+        String build = PluginUtil.getPluginFile(this).getString("build");
+        getLogger().info(plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion() + " (build: " + build + ") enabled.");
     }
 
     @Override
     public void onDisable() {
         // Shutdown MySQL-Adapter
         if (portalStorage != null) {
-            portalStorage.close();
+            portalStorage.disconnect();
             portalStorage = null;
         }
 
@@ -128,10 +129,6 @@ public final class TCPortals extends JavaPlugin {
             portalHandler.shutdown();
             portalHandler = null;
         }
-    }
-
-    public String getServerName() {
-        return serverName;
     }
 
     public LocalizationManager getLocalizationManager() {
@@ -144,5 +141,9 @@ public final class TCPortals extends JavaPlugin {
 
     public PortalHandler getPortalHandler() {
         return portalHandler;
+    }
+
+    public String getServerName() {
+        return serverName;
     }
 }

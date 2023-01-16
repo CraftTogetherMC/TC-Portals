@@ -71,7 +71,7 @@ public class PortalHandler implements Listener {
 
     public PortalHandler(String host, int port) {
         // Create Server Socket
-        this.tcpServer = new TCPServer(host, port);
+        tcpServer = new TCPServer(host, port);
 
         // Register as EventHandler
         plugin.getServer().getPluginManager().registerEvents(this, plugin);

@@ -28,7 +28,24 @@ public class Commands implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length > 0 && args[0].equals("debug")) {
+        if (args.length > 0 && args[0].equals("reload")) {
+            plugin.getLogger().info("Disconnecting portal-storage...");
+            plugin.getPortalStorage().disconnect();
+
+            plugin.getLogger().info("Reloading config.yml...");
+            plugin.reloadConfig();
+
+            plugin.getLogger().info("Reloading localization...");
+            plugin.getLocalizationManager().loadLocalization(plugin.getConfig().getString("Settings.Language"));
+
+            plugin.getLogger().info("Reconnecting portal-storage...");
+            plugin.getPortalStorage().connect();
+
+            plugin.getLogger().info("Reload completed...");
+            PluginUtil.adventure().sender(sender).sendMessage(Localization.CONFIG_RELOADED.deserialize());
+        }
+
+        else if (args.length > 0 && args[0].equals("debug")) {
             Component message = Component.empty();
 
             if (args.length == 1)
@@ -63,44 +80,44 @@ public class Commands implements TabExecutor {
             }
         }
 
-        new UpdateChecker(plugin).checkUpdatesAsync((err, build, currentVersion, currentBuild) -> {
-            if (err != null)
-                err.printStackTrace();
+        else if(args.length == 0) {
+            new UpdateChecker(plugin).checkUpdatesAsync((err, build, currentVersion, currentBuild) -> {
+                if (err != null)
+                    err.printStackTrace();
 
-            List<Placeholder> resolvers = new ArrayList<>();
-            Component message;
+                List<Placeholder> resolvers = new ArrayList<>();
+                Component message;
 
-            if (build == null) {
-                resolvers.add(Placeholder.set("currentVersion", currentVersion));
-                resolvers.add(Placeholder.set("currentBuild", currentBuild));
+                if (build == null) {
+                    resolvers.add(Placeholder.set("currentVersion", currentVersion));
+                    resolvers.add(Placeholder.set("currentBuild", currentBuild));
 
-                message = plugin.getLocalizationManager().miniMessage()
-                        .deserialize("<prefix/><gold>" + plugin.getName() + " version: </gold><yellow>" + currentVersion + " #" + currentBuild + "</yellow><newLine/>");
+                    message = plugin.getLocalizationManager().miniMessage()
+                            .deserialize("<prefix/><gold>" + plugin.getName() + " version: </gold><yellow>" + currentVersion + " #" + currentBuild + "</yellow><newLine/>");
 
-                if (err == null)
-                    message = message.append(Localization.UPDATE_LASTBUILD.deserialize(resolvers));
-                else
-                    message = message.append(Localization.UPDATE_ERROR.deserialize(
-                            Placeholder.set("error", err.getMessage())));
-            }
+                    if (err == null)
+                        message = message.append(Localization.UPDATE_LASTBUILD.deserialize(resolvers));
+                    else
+                        message = message.append(Localization.UPDATE_ERROR.deserialize(
+                                Placeholder.set("error", err.getMessage())));
+                } else {
+                    resolvers.add(Placeholder.set("version", build.getVersion()));
+                    resolvers.add(Placeholder.set("build", build.getNumber()));
+                    resolvers.add(Placeholder.set("fileName", build.getFileName()));
+                    resolvers.add(Placeholder.set("fileSize", build.getHumanReadableFileSize()));
+                    resolvers.add(Placeholder.set("url", build.getUrl()));
+                    resolvers.add(Placeholder.set("currentVersion", currentVersion));
+                    resolvers.add(Placeholder.set("currentBuild", currentBuild));
 
-            else {
-                resolvers.add(Placeholder.set("version", build.getVersion()));
-                resolvers.add(Placeholder.set("build", build.getNumber()));
-                resolvers.add(Placeholder.set("fileName", build.getFileName()));
-                resolvers.add(Placeholder.set("fileSize", build.getHumanReadableFileSize()));
-                resolvers.add(Placeholder.set("url", build.getUrl()));
-                resolvers.add(Placeholder.set("currentVersion", currentVersion));
-                resolvers.add(Placeholder.set("currentBuild", currentBuild));
+                    message = switch (build.getType()) {
+                        case RELEASE -> Localization.UPDATE_RELEASE.deserialize(resolvers);
+                        case SNAPSHOT -> Localization.UPDATE_DEVBUILD.deserialize(resolvers);
+                    };
+                }
 
-                message = switch (build.getType()) {
-                    case RELEASE -> Localization.UPDATE_RELEASE.deserialize(resolvers);
-                    case SNAPSHOT -> Localization.UPDATE_DEVBUILD.deserialize(resolvers);
-                };
-            }
-
-            PluginUtil.adventure().sender(sender).sendMessage(message);
-        }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"));
+                PluginUtil.adventure().sender(sender).sendMessage(message);
+            }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"));
+        }
 
         return true;
     }
@@ -115,8 +132,10 @@ public class Commands implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         List<String> suggestions = new ArrayList<>();
 
-        if (args.length == 1)
+        if (args.length == 1) {
             suggestions.add("debug");
+            suggestions.add("reload");
+        }
 
         if (args.length == 2) {
             suggestions.add("queuedTrains");
