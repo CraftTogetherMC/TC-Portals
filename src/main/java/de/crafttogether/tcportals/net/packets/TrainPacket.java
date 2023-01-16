@@ -12,6 +12,7 @@ public class TrainPacket implements Packet {
 
     public String name;
     public double speed;
+    public double waitDistance;
     public String portal;
     public Set<String> owners;
     public String config;

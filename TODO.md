@@ -11,10 +11,10 @@
 - ~~Cancel running tasks if train was destroyed~~
 - ~~Handle trains with fueled furnace-minecarts~~
 - ~~Restore collision-property~~
-- Restore wait-distance-property
-- Try to make portal-queue asynchronous
 - ~~Apply flags also at portal-exits~~
 - ~~Add feedback for used flags when a portal is created~~
-- Handle editing of signs correctly
 - ~~Translate Localization.class~~
+- ~~Restore wait-distance-property~~
+- Handle editing of signs correctly
+- Try to make portal-queue asynchronous
 - TC-Coasters?

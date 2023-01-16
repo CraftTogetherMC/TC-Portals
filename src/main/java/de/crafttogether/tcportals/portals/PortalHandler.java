@@ -251,6 +251,7 @@ public class PortalHandler implements Listener {
         TrainPacket packet = new TrainPacket(trainId);
         packet.name = group.getProperties().getTrainName();
         packet.speed = group.head().getRealSpeedLimited();
+        packet.waitDistance = group.getProperties().getWaitDistance();
         packet.owners = group.getProperties().getOwners();
         packet.config = trainConfig.toString();
         packet.passengers = passengers;
@@ -406,7 +407,7 @@ public class PortalHandler implements Listener {
                 queuedTrain.setFuelMap(TCHelper.getFuelMap(group, true));
 
             queuedTrain.setCollisionOptions(group.getProperties().getCollision());
-            queuedTrain.setWaitDistance(group.getProperties().getWaitDistance());
+            queuedTrain.setWaitDistance(packet.waitDistance);
 
             group.getProperties().setCollision(CollisionOptions.CANCEL);
             group.getProperties().setWaitDistance(0);
