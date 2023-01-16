@@ -1,6 +1,5 @@
 # TC-Portals
 #### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts), [CTCommons](https://github.com/CraftTogetherMC/CTCommons) and a MySQL-Database
-  
 **Java-Version:** 17 or above  
 **Minecraft-Version:** 1.17.1 or above  
 
