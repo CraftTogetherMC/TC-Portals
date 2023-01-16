@@ -3,7 +3,7 @@
 **Java-Version:** 17 or above  
 **Minecraft-Version:** 1.17.1 or above  
 
-TC-Portals is a plugin for minecraft servers that can be used on [SpigotMC](https://www.spigotmc.org), [PaperMC](https://papermc.io) or forks of these projects.  
+TC-Portals is a plugin for Minecraft servers using [SpigotMC](https://www.spigotmc.org), [PaperMC](https://papermc.io) or forks of these projects.  
 It serves as an add-on for the [TrainCarts](https://github.com/bergerhealer/TrainCarts) plugin which adds ActionSigns, supporting cross-server teleporting of trains in a BungeeCord network.   
 It is very lightweight as database queries and network connections run asynchronously where possible.
 
@@ -45,7 +45,8 @@ You can use them at the entrance as well as at the exit or both.
 ## Pathfinding across servers (BungeeCord)
 With a little extra work, it is possible to reach destinations on another server.
 
-For example, if you want to drive from server1 to a destination on server2, you need to create a [destination](https://wiki.traincarts.net/p/TrainCarts/Signs/Destination) on server1 that leads to the portal, which leads to server2.  
+For example, if you want to drive from server1 to a destination on server2,
+you need to create a [destination](https://wiki.traincarts.net/p/TrainCarts/Signs/Destination) on server1 that leads to the portal, which leads to server2.  
 Let's name it server2 as well.  
   
 Now you create a [route](https://wiki.traincarts.net/p/TrainCarts/PathFinding#Route_Manager) for the train, which first contain the destination: `server2` and then afterwards,  
