@@ -154,7 +154,19 @@ public class TCHelper {
             clearInventory(member);
     }
 
-    public static void dropChestedHorseItems(MinecartMember<?> member) {
+    public static void dropInventory(MinecartMember<?> member) {
+        if (member instanceof MinecartMemberChest memberChest)
+            memberChest.getEntity().getInventory().clear();
+
+        dropChestedHorseInventory(member);
+    }
+
+    public static void dropInventory(MinecartGroup group) {
+        for (MinecartMember<?> member : group)
+            dropInventory(member);
+    }
+
+    public static void dropChestedHorseInventory(MinecartMember<?> member) {
         for (Entity entity : member.getEntity().getEntity().getPassengers()) {
             if (!(entity instanceof ChestedHorse)) continue;
             Inventory inventory = ((ChestedHorse) entity).getInventory();
@@ -169,9 +181,9 @@ public class TCHelper {
         }
     }
 
-    public static void dropChestedHorseItems(MinecartGroup group) {
+    public static void dropChestedHorseInventory(MinecartGroup group) {
         for (MinecartMember<?> member : group)
-            dropChestedHorseItems(member);
+            dropChestedHorseInventory(member);
     }
 
     public static void sendMessage(MinecartMember<?> member, Localization localization, Placeholder... arguments) {

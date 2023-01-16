@@ -120,22 +120,24 @@ public class PortalHandler implements Listener {
 
         Util.debug("Train (" + group.getProperties().getTrainName() + ") goes from " + plugin.getServerName() + " (" + TCHelper.signToString(event.getLines()) + ") to " + portal.getTargetLocation().getServer() + ". Portal: " + portal.getName() + " Type: " + portal.getType().name() + ")");
 
-        // Disable item-drops
-        group.getProperties().setSpawnItemDrops(false);
-
         // Look if flags are used
         boolean clearItems = false;
-        if (event.getLine(3).contains("!mobs"))   TCHelper.killNonPlayerPassengers(group);
-        if (event.getLine(3).contains("-mobs"))   TCHelper.ejectNonPlayerPassengers(group);
+
+        if (event.getLine(3).contains("!mobs"))
+            TCHelper.killNonPlayerPassengers(group);
+        if (event.getLine(3).contains("-mobs"))
+            TCHelper.ejectNonPlayerPassengers(group);
         if (event.getLine(3).contains("!items")) {
             TCHelper.clearInventory(group);
             clearItems = true;
         }
         if (event.getLine(3).contains("-items"))  {
-            TCHelper.dropChestedHorseItems(group);
-            group.getProperties().setSpawnItemDrops(true);
+            TCHelper.dropInventory(group);
             clearItems = true;
         }
+
+        // Disable item-drops
+        group.getProperties().setSpawnItemDrops(false);
 
         // Try to transfer train to the target server
         boolean success = transferTrain(event, portal, clearItems);
@@ -417,6 +419,17 @@ public class PortalHandler implements Listener {
                 }
             }
 
+            // Look if flags are used
+            Sign sign = portal.getSign();
+            if (sign.getLine(3).contains("!mobs"))
+                TCHelper.killNonPlayerPassengers(group);
+            if (sign.getLine(3).contains("-mobs"))
+                TCHelper.ejectNonPlayerPassengers(group);
+            if (sign.getLine(3).contains("!items"))
+                TCHelper.clearInventory(group);
+            if (sign.getLine(3).contains("-items"))
+                TCHelper.dropInventory(group);
+
             Util.debug("Train spawned! (" + TCHelper.groupToString(group) + ") Name: " + group.getProperties().getTrainName() + " OldName: " + packet.name + " Size: " + group.size());
 
             // Cache received trains
@@ -596,6 +609,7 @@ public class PortalHandler implements Listener {
     public static void reEnterPlayer(Passenger passenger, PlayerSpawnLocationEvent event) {
         // Check if some error occurred
         if (passenger.hasError()) {
+            // TODO: Could be async
             Bukkit.getScheduler().runTaskLater(TCPortals.plugin, () -> {
                 PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());

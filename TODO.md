@@ -13,8 +13,8 @@
 - ~~Restore collision-property~~
 - Restore wait-distance-property
 - Try to make portal-queue asynchronous
-- Apply flags also at portal-entrances
-- Add feedback for used flags when a portal is created
+- ~~Apply flags also at portal-exits~~
+- ~~Add feedback for used flags when a portal is created~~
 - Handle editing of signs correctly
-- Translate Localization.class
+- ~~Translate Localization.class~~
 - TC-Coasters?
