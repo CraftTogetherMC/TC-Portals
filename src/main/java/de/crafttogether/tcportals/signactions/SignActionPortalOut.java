@@ -13,6 +13,7 @@ import de.crafttogether.tcportals.Localization;
 import de.crafttogether.tcportals.portals.Portal;
 import de.crafttogether.tcportals.util.TCHelper;
 import de.crafttogether.tcportals.util.Util;
+import org.bukkit.ChatColor;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -102,8 +103,20 @@ public class SignActionPortalOut extends SignAction {
             return false;
         }
 
+        String signType = event.isCartSign() ? "cart" : "train";
+        if (event.getLine(3).contains("!mobs"))
+            Localization.PORTAL_FLAG_KILLMOBS.message(event.getPlayer(),Placeholder.set("signType", signType));
+        if (event.getLine(3).contains("-mobs"))
+            Localization.PORTAL_FLAG_DROPMOBS.message(event.getPlayer(), Placeholder.set("signType", signType));
+        if (event.getLine(3).contains("!items"))
+            Localization.PORTAL_FLAG_KILLITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+        if (event.getLine(3).contains("-items"))
+            Localization.PORTAL_FLAG_DROPITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+
         SignBuildOptions.create()
-                .setName("ServerPortal-Exit").setDescription("allow trains to travel between servers" + ((event.getLine(3).equalsIgnoreCase("clear")) ? ".\n§eChest-Minecarts will be cleared" : ""))
+                .setName(ChatColor.translateAlternateColorCodes('&', Localization.PORTAL_CREATE_OUT_NAME.get()))
+                .setDescription(ChatColor.translateAlternateColorCodes('&', Localization.PORTAL_CREATE_OUT_DESCRIPTION.get()))
+                .setHelpURL("https://github.com/CraftTogetherMC/TC-Portals")
                 .handle(event.getPlayer());
 
         return true;

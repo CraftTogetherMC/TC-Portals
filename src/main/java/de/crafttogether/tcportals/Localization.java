@@ -26,17 +26,29 @@ public class Localization extends LocalizationEnum {
     public static final Localization PORTAL_EXIT_TRACKOCCUPIED = new Localization("portal.exit.trackOccupied", "<prefix/><red>Track is occupied by another train at </red><newLine><prefix/><yellow>{world} {x} {z} {y}</yellow><red>.</red>");
 
     public static final Localization PORTAL_CREATE_NONAME = new Localization("portal.create.noName", "<prefix/><red>Please write a name for this portal on the third line.</red>");
+    public static final Localization PORTAL_CREATE_IN_NAME = new Localization("portal.create.in.name", "Portal entrance");
+    public static final Localization PORTAL_CREATE_IN_DESCRIPTION = new Localization("portal.create.in.description", "allow trains to travel between servers");
     public static final Localization PORTAL_CREATE_IN_NOTEXIST = new Localization("portal.create.in.notExist", "<prefix/><gold>Notice: </gold><yellow>No exit portal for channel </yellow><gold>{name}</gold> <yellow>has been created yet.</yellow>");
     public static final Localization PORTAL_CREATE_IN_SUCCESS = new Localization("portal.create.in.success", "<prefix/><green>You created a </green><yellow>Portal-Entrance</yellow><green> for channel (</green><yellow>{name}</yellow><green>).</green>");
+    public static final Localization PORTAL_CREATE_OUT_NAME = new Localization("portal.create.out.name", "Portal exit");
+    public static final Localization PORTAL_CREATE_OUT_DESCRIPTION = new Localization("portal.create.out.description", "allow trains to travel between servers");
     public static final Localization PORTAL_CREATE_OUT_EXIST = new Localization("portal.create.out.exist", "<prefix/><red>There is already a portal exit for channel </red><yellow>{name}</yellow><red>.</red>");
     public static final Localization PORTAL_CREATE_OUT_SUCCESS = new Localization("portal.create.out.success", "<prefix/><green>You created a </green><yellow>Portal-Exit</yellow><green> for channel (</green><yellow>{name}</yellow><green>).</green>");
+    public static final Localization PORTAL_CREATE_BIDIRECTIONAL_NAME = new Localization("portal.create.bidirectional.name", "Bidirectional portal");
+    public static final Localization PORTAL_CREATE_BIDIRECTIONAL_DESCRIPTION = new Localization("portal.create.bidirectional.description", "allow trains to travel between servers");
     public static final Localization PORTAL_CREATE_BIDIRECTIONAL_EXISTS = new Localization("portal.create.bidirectional.exists", "<prefix/><red>There is already a complete portal pair for channel </red><yellow>{name}</yellow><red>.</red>");
     public static final Localization PORTAL_CREATE_BIDIRECTIONAL_SAMESERVER = new Localization("portal.create.bidirectional.sameServer", "<prefix/><red>There is already another bidirectional portal for channel </red><yellow>{name}</yellow><red> on this server.</red>");
-    public static final Localization PORTAL_CREATE_BIDIRECTIONAL_SUCCESS = new Localization("portal.create.bidirectional.success", "<prefix/>><green>You created a </green><yellow>Bidirectional-Portal</yellow><green> for channel (</green><yellow>{name}</yellow><green>).</green>");
-    public static final Localization PORTAL_CREATE_BIDIRECTIONAL_INFO_FIRST = new Localization("portal.create.bidirectional.info.first", "<prefix/><gold>Notice: </gold><yellow>A second portal for channel </yellow><gold>{name}</gold><yellow> has not yet been created.</red>");
+    public static final Localization PORTAL_CREATE_BIDIRECTIONAL_SUCCESS = new Localization("portal.create.bidirectional.success", "<prefix/><green>You created a </green><yellow>Bidirectional-Portal</yellow><green> for channel (</green><yellow>{name}</yellow><green>).</green>");
+    public static final Localization PORTAL_CREATE_BIDIRECTIONAL_INFO_FIRST = new Localization("portal.create.bidirectional.info.first", "<prefix/><gold>Notice: </gold><yellow>A second portal for channel </yellow><gold>{name}</gold><yellow> has not yet been created.</yellow>");
     public static final Localization PORTAL_CREATE_BIDIRECTIONAL_INFO_SECOND = new Localization("portal.create.bidirectional.info.second", """
             <prefix/><gold>Notice: </gold><yellow>The other portal is in the world </yellow><gold>{world}</gold><yellow> on the server </yellow><gold>{server}</gold>
             <prefix/><yellow>Coordinates: </yellow><gold>{x}, {y}, {z}</gold>""");
+
+    public static final Localization PORTAL_FLAG_KILLMOBS = new Localization("portal.flag.killMobs", "<prefix/><gold>Notice: </gold><yellow>Mobs inside the {signType} will be killed.</yellow>");
+    public static final Localization PORTAL_FLAG_DROPMOBS = new Localization("portal.flag.dropMobs", "<prefix/><gold>Notice: </gold><yellow>Mobs inside the {signType} will be ejected.</yellow>");
+    public static final Localization PORTAL_FLAG_KILLITEMS = new Localization("portal.flag.killItems", "<prefix/><gold>Notice: </gold><yellow>Items inside the {signType} will be destroyed.</yellow>");
+    public static final Localization PORTAL_FLAG_DROPITEMS = new Localization("portal.flag.dropItems", "<prefix/><gold>Notice: </gold><yellow>Items inside the {signType} will be dropped.</yellow>");
+
     public static final Localization UPDATE_LASTBUILD = new Localization("update.lastBuild", "<prefix/><green>Your installed version is up to date</green>");
     public static final Localization UPDATE_RELEASE = new Localization("update.devBuild", """
             <hover:show_text:'<green>Click here to download this version'><click:open_url:'{url}'><prefix/><green>A new full version was released!</green>
