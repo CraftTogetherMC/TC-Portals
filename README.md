@@ -1,6 +1,8 @@
 # TC-Portals
 #### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts), [CTCommons](https://github.com/CraftTogetherMC/CTCommons) and a MySQL-Database
-
+  
+**Java-Version:** 17 or above  
+**Minecraft-Version:** 1.17.1 or above  
 
 TC-Portals is a plugin for minecraft servers using [SpigotMC](https://www.spigotmc.org), [PaperMC](https://papermc.io) or forks of these projects.  
 It serves as an add-on for the [TrainCarts](https://github.com/bergerhealer/TrainCarts) plugin which adds ActionSigns, supporting cross-server teleporting of trains in a BungeeCord network.   
@@ -34,7 +36,7 @@ If you use `[cart]` instead of `[train]`, a train will be spawned at the exit ca
 | ![](https://i.imgur.com/VJEQ2fP.png) | **Directional Portal** *(Exit)*<br/><br/>This sign represents a portal exit.<br/>Signs of this type can only exist once per channel name.                                                                                                       |
 
 ### Flags
-There are some flags you can use on the fourth line of a portal-sign to control whether itens and mobs are transported.  
+There are some flags you can use on the fourth line of a portal-sign to control whether items and mobs are transported.  
 You can use them at the entrance as well as at the exit or both.
 - `!mobs` means mobs are killed
 - `!items` means items are killed
