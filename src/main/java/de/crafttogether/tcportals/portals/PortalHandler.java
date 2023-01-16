@@ -439,7 +439,7 @@ public class PortalHandler implements Listener {
 
             // Route fix
             boolean routeFixingDisabled = plugin.getConfig().getBoolean("Settings.DisableRouteFixing");
-            if (!routeFixingDisabled && group.getProperties().getDestination().equals(TCPortals.plugin.getServerName()) && group.getProperties().getNextDestinationOnRoute() != null)
+            if (!routeFixingDisabled && group.getProperties().getDestination().equals(plugin.getServerName()) && group.getProperties().getNextDestinationOnRoute() != null)
                 group.getProperties().setDestination(group.getProperties().getNextDestinationOnRoute());
         }
 
@@ -610,8 +610,7 @@ public class PortalHandler implements Listener {
     public static void reEnterPlayer(Passenger passenger, PlayerSpawnLocationEvent event) {
         // Check if some error occurred
         if (passenger.hasError()) {
-            // TODO: Could be async
-            Bukkit.getScheduler().runTaskLater(TCPortals.plugin, () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());
             }, 20L);
