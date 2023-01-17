@@ -3,7 +3,9 @@
 ![](https://img.shields.io/github/last-commit/CraftTogetherMC/TC-Portals?style=flat-square)
 ![](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.craft-together-mc.de%2Fjob%2FTC%2520Portals&style=flat-square)
 ![](https://shields-io-visitor-counter.herokuapp.com/badge?page=CraftTogetherMC.TC-Portals&style=flat-square)
-
+![](https://img.shields.io/spiget/download-size/107441?style=flat-square)
+![](https://img.shields.io/spiget/downloads/107441?style=flat-square)
+  
 # TC-Portals
 #### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts), [CTCommons](https://github.com/CraftTogetherMC/CTCommons) and a MySQL-Database
 **Java-Version:** 17 or above  
