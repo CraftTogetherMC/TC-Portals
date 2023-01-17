@@ -17,4 +17,4 @@
 - ~~Restore wait-distance-property~~
 - Handle editing of signs correctly
 - Try to make portal-queue asynchronous
-- TC-Coasters?
+- TC-Coasters support
