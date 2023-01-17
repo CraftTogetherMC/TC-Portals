@@ -78,6 +78,8 @@ public class PortalHandler implements Listener {
 
         // Register TrainCarts-ActionSigns
         registerActionSigns();
+
+        Util.debug("PortalHandler started");
     }
 
     public void handleTrain(SignActionEvent event) {
@@ -327,8 +329,8 @@ public class PortalHandler implements Listener {
         }
 
         // No Rail!
-        RailPiece rail = RailLookup.discoverRailPieceFromSign(portal.getSign().getBlock());
-        if (rail == null || rail.block() == null) {
+        RailPiece rail = RailPiece.create(targetWorld.getBlockAt(targetLocation.getBukkitLocation()));
+        if (rail.isNone()) {
             Util.debug("Could not find a Rail at " + targetLocation.getWorld() + ", " + targetLocation.getX() + ", " + targetLocation.getY() + ", " + targetLocation.getZ());
             Passenger.error(packet.id, Localization.PORTAL_EXIT_NORAILS.deserialize(
                     Placeholder.set("world", targetLocation.getWorld()),
@@ -421,7 +423,7 @@ public class PortalHandler implements Listener {
             }
 
             // Look if flags are used
-            Sign sign = portal.getSign();
+            RailLookup.TrackedSign sign = portal.getSign();
             if (sign.getLine(3).contains("!mobs"))
                 TCHelper.killNonPlayerPassengers(group);
             if (sign.getLine(3).contains("-mobs"))
@@ -485,7 +487,7 @@ public class PortalHandler implements Listener {
                 }, 0L, 1L);
             }, launchDelayTicks);
 
-            Util.debug("Train (" + group.getProperties().getTrainName() + ") came from " + packet.source + ". Portal: " + packet.portal + "/" + portal.getName() + " Type: " + portal.getType().name() + " to " + plugin.getServerName() + " (" + TCHelper.signToString(portal.getSign().getLines()) + ")");
+            Util.debug("Train (" + group.getProperties().getTrainName() + ") came from " + packet.source + ". Portal: " + packet.portal + "/" + portal.getName() + " Type: " + portal.getType().name() + " to " + plugin.getServerName() + " (" + TCHelper.signToString(portal.getSign().sign.getLines()) + ")");
 
             // Remove from queue
             return true;

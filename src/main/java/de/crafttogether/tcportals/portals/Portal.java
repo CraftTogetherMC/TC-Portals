@@ -1,7 +1,11 @@
 package de.crafttogether.tcportals.portals;
 
+import com.bergerkiller.bukkit.common.bases.IntVector3;
+import com.bergerkiller.bukkit.common.offline.OfflineBlock;
 import com.bergerkiller.bukkit.common.utils.BlockUtil;
 import com.bergerkiller.bukkit.tc.SignActionHeader;
+import com.bergerkiller.bukkit.tc.controller.components.RailPiece;
+import com.bergerkiller.bukkit.tc.rails.RailLookup;
 import de.crafttogether.common.NetworkLocation;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -56,13 +60,21 @@ public class Portal {
         );
     }
 
-    public Sign getSign() {
+    public RailPiece getRailPiece() {
         Location location = this.getTargetLocation().getBukkitLocation();
         if (location == null || location.getWorld() == null) return null;
 
-        Block block = location.getWorld().getBlockAt(location);
-        Sign sign = BlockUtil.getSign(block);
-        if (isValid(sign)) return sign;
+        RailPiece rail = RailPiece.create(location.getWorld().getBlockAt(location));
+        return rail.isNone() ? null : rail;
+    }
+
+    public RailLookup.TrackedSign getSign() {
+        RailPiece rail = getRailPiece();
+
+        for (RailLookup.TrackedSign sign : rail.signs()) {
+            if (isValid(sign.sign))
+                return sign;
+        }
 
         return null;
     }

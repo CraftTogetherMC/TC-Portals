@@ -120,12 +120,12 @@ public class SignActionPortal extends SignAction {
 
             // Save to database
             try {
-                plugin.getPortalStorage().create(
+                plugin.getPortalStorage().createOrUpdate(
                         portalName,
                         Portal.PortalType.BIDIRECTIONAL,
                         plugin.getConfig().getString("Portals.Server.PublicAddress"),
                         plugin.getConfig().getInt("Portals.Server.Port"),
-                        NetworkLocation.fromBukkitLocation(event.getLocation(), plugin.getServerName()));
+                        NetworkLocation.fromBukkitLocation(event.getRailPiece().block().getLocation(), plugin.getServerName()));
             } catch (SQLException e) {
                 Localization.ERROR_DATABASE.message(event.getPlayer(),
                         Placeholder.set("error", e.getMessage()));
@@ -164,5 +164,17 @@ public class SignActionPortal extends SignAction {
                 .handle(event.getPlayer());
 
         return true;
+    }
+
+    @Override
+    public void destroy(SignActionEvent event) {
+        Util.debug("SignAction#destroy()");
+        Portal portal = TCPortals.plugin.getPortalStorage().getPortal(event.getRailPiece().block().getLocation());
+
+        if (portal != null) {
+            TCPortals.plugin.getPortalStorage().delete(portal.getId(), (err, rows) -> {
+                Util.debug("SignAction#destroy(): removed sign " + TCHelper.signToString(event.getLines()));
+            });
+        }
     }
 }

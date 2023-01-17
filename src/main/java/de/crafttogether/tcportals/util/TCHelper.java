@@ -17,6 +17,7 @@ import com.bergerkiller.bukkit.tc.controller.type.MinecartMemberFurnace;
 import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.properties.TrainProperties;
 import com.bergerkiller.bukkit.tc.properties.TrainPropertiesStore;
+import com.bergerkiller.bukkit.tc.rails.RailLookup;
 import com.bergerkiller.bukkit.tc.utils.TrackMovingPoint;
 import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
 import de.crafttogether.common.localization.Placeholder;
@@ -283,8 +284,8 @@ public class TCHelper {
         return lines[0] + " | " + lines[1] + " | " + lines[2] + " | " + lines[3];
     }
 
-    public static SpawnableGroup.SpawnLocationList getSpawnLocations(SpawnableGroup spawnable, RailPiece rail, Sign sign) {
-        SignActionEvent info = new SignActionEvent(sign.getBlock());
+    public static SpawnableGroup.SpawnLocationList getSpawnLocations(SpawnableGroup spawnable, RailPiece rail, RailLookup.TrackedSign sign) {
+        SignActionEvent info = new SignActionEvent(sign);
 
         /*
           Copyright (C) 2013-2022 bergerkiller
