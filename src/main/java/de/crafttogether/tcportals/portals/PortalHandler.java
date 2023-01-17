@@ -614,7 +614,6 @@ public class PortalHandler implements Listener {
                 PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());
             }, 20L);
-
             return;
         }
 

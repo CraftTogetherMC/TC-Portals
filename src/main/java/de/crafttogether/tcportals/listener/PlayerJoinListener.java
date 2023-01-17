@@ -3,8 +3,10 @@ package de.crafttogether.tcportals.listener;
 import de.crafttogether.TCPortals;
 import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
 import de.crafttogether.common.localization.Placeholder;
+import de.crafttogether.common.update.BuildType;
 import de.crafttogether.common.update.UpdateChecker;
 import de.crafttogether.common.util.PluginUtil;
+import de.crafttogether.tcportals.Localization;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -46,10 +48,10 @@ public class PlayerJoinListener implements Listener {
             resolvers.add(Placeholder.set("currentVersion", currentVersion));
             resolvers.add(Placeholder.set("currentBuild", currentBuild));
 
-            message = switch (build.getType()) {
-                case RELEASE -> de.crafttogether.ctcommons.Localization.UPDATE_RELEASE.deserialize(resolvers);
-                case SNAPSHOT -> de.crafttogether.ctcommons.Localization.UPDATE_DEVBUILD.deserialize(resolvers);
-            };
+            if (build.getType().equals(BuildType.RELEASE))
+                message = Localization.UPDATE_RELEASE.deserialize(resolvers);
+            else
+                message = Localization.UPDATE_DEVBUILD.deserialize(resolvers);
 
             PluginUtil.adventure().player(event.getPlayer()).sendMessage(message);
         }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"), 40L);
