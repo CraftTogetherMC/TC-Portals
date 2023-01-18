@@ -1,5 +1,4 @@
 ![](https://img.shields.io/github/license/CraftTogetherMC/TC-Portals?style=flat-square)
-![](https://img.shields.io/github/v/release/CraftTogetherMC/TC-Portals?include_prereleases&style=flat-square)
 ![](https://img.shields.io/github/last-commit/CraftTogetherMC/TC-Portals?style=flat-square)
 ![](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.craft-together-mc.de%2Fjob%2FTC%2520Portals&style=flat-square)
 ![](https://shields-io-visitor-counter.herokuapp.com/badge?page=CraftTogetherMC.TC-Portals&style=flat-square)
