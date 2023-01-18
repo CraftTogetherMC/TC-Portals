@@ -22,9 +22,7 @@ It is very lightweight as database queries and network connections run asynchron
 This plugin was developed for the [CraftTogetherMC](https://github.com/CraftTogetherMC) Minecraft server, see also: [TC-Destinations](https://github.com/CraftTogetherMC/TC-Destinations)!
 
 ### A big thank you and lots of love go out to [TeamBergerhealer](https://github.com/bergerhealer)
-Also, a lot of appreciation goes to the people behind [Cloud](https://github.com/Incendo/cloud) and [Adventure](https://github.com/KyoriPowered/adventure)!  
-  
-#### Dev-Builds: [See here](https://ci.craft-together-mc.de/job/TC%20Destinations/)  
+Also, a lot of appreciation goes to the people behind [Cloud](https://github.com/Incendo/cloud) and [Adventure](https://github.com/KyoriPowered/adventure)!   
   
 [![](https://i.imgur.com/SzkHTE8.png)](https://www.youtube.com/watch?v=8XCvmY8EPtk)  
 
