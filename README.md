@@ -6,6 +6,10 @@
 ![](https://img.shields.io/spiget/download-size/107442?style=flat-square)
 ![](https://img.shields.io/spiget/downloads/107442?style=flat-square)
   
+[Development Builds](https://ci.craft-together-mc.de/job/TC-Portals) / 
+[Modrinth](https://modrinth.com/plugin/tc-portals) / 
+[SpigotMC](https://www.spigotmc.org/resources/tc-portals.107442/)
+  
 # TC-Portals
 #### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts), [CTCommons](https://github.com/CraftTogetherMC/CTCommons) and a MySQL-Database
 **Java-Version:** 17 or above  
