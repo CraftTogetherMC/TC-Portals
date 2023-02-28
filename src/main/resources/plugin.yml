@@ -1,6 +1,6 @@
 name: TCPortals
-version: '${project.version}'
-build: '${project.build.number}'
+version: ${project.version}
+build: ${project.build.number}
 main: de.crafttogether.TCPortals
 api-version: 1.17
 depend: [ CTCommons, BKCommonLib, Train_Carts ]
