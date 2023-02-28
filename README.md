@@ -76,7 +76,7 @@ If you use [TC-Destinations](https://github.com/CraftTogetherMC/TC-Destinations)
 ### MySQL Table-structure:
 
 ``` sql
-CREATE TABLE `cb_portals` (
+CREATE TABLE `tc_portals` (
     `id` int(11) NOT NULL,
     `name` varchar(16) NOT NULL,
     `type` varchar(16) NOT NULL,
@@ -89,11 +89,11 @@ CREATE TABLE `cb_portals` (
     `z` double DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `cb_portals`
+ALTER TABLE `tc_portals`
     ADD PRIMARY KEY (`id`),
     ADD KEY `name` (`name`) USING BTREE;
 
-ALTER TABLE `cb_portals`
+ALTER TABLE `tc_portals`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 COMMIT;
