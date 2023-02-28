@@ -6,7 +6,7 @@
 
 <groupId>de.crafttogether</groupId>
 <artifactId>TCPortals</artifactId>
-<version>1.0-BETA</version>
+<version>1.0-BETA2</version>
 <packaging>jar</packaging>
 
 <name>TCPortals</name>
