@@ -5,7 +5,7 @@
 ![](https://img.shields.io/spiget/download-size/107442?style=flat-square)
 ![](https://img.shields.io/spiget/downloads/107442?style=flat-square)
   
-[Development Builds](https://ci.craft-together-mc.de/job/TC-Portals) / 
+[Development Builds](https://ci.craft-together-mc.de/job/TC%20Portals/) / 
 [Modrinth](https://modrinth.com/plugin/tc-portals) / 
 [SpigotMC](https://www.spigotmc.org/resources/tc-portals.107442/)
   
