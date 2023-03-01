@@ -38,7 +38,9 @@ public class PortalStorage {
                 this.plugin.getConfig().getString("MySQL.Username"),
                 this.plugin.getConfig().getString("MySQL.Password"),
                 this.plugin.getConfig().getString("MySQL.Database"),
-                this.plugin.getConfig().getString("MySQL.TablePrefix"));
+                this.plugin.getConfig().getString("MySQL.TablePrefix"),
+                this.plugin.getConfig().getString("MySQL.JDBCArgs")
+        );
 
         // Create Tables if missing
         MySQLConnection connection = this.mySQLAdapter.getConnection();
