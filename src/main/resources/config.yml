@@ -26,4 +26,4 @@ MySQL:
   Username: username
   Password: password
   TablePrefix: tc_
-  JDBCArgs: useSSL=true&trustServerCertificate=true
+  JDBCArgs: sslMode=true
