@@ -15,9 +15,10 @@
 
 <properties>
     <java.version>17</java.version>
-    <project.spigot.version>1.17.1-R0.1-SNAPSHOT</project.spigot.version>
-    <project.bkcommonlib.version>1.19.3-v1-SNAPSHOT</project.bkcommonlib.version>
-    <project.traincarts.version>1.19.3-v1-SNAPSHOT</project.traincarts.version>
+    <project.ctcommons.version>1.0-BETA3</project.ctcommons.version>
+    <project.spigot.version>1.20.1-R0.1-SNAPSHOT</project.spigot.version>
+    <project.bkcommonlib.version>1.20.4-v4-SNAPSHOT</project.bkcommonlib.version>
+    <project.traincarts.version>1.20.4-v2-SNAPSHOT</project.traincarts.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.number>NO-CI</project.build.number>
 </properties>
@@ -41,7 +42,7 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.10.1</version>
+            <version>3.13.0</version>
             <configuration>
                 <source>${java.version}</source>
                 <target>${java.version}</target>
@@ -51,7 +52,7 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
-            <version>3.4.1</version>
+            <version>3.5.2</version>
             <executions>
                 <execution>
                     <phase>package</phase>
@@ -142,7 +143,7 @@
     <dependency>
         <groupId>de.crafttogether</groupId>
         <artifactId>CTCommons</artifactId>
-        <version>1.0-BETA3</version>
+        <version>${project.ctcommons.version}</version>
         <scope>provided</scope>
     </dependency>
 
