@@ -248,7 +248,7 @@ public class TCHelper {
 
         for (RailPiece rail : rails) {
             for (Player player : Bukkit.getOnlinePlayers())
-                player.spawnParticle(Particle.BARRIER, rail.block().getLocation().add(0, 1, 0), 1);
+                player.spawnParticle(Particle.BLOCK_MARKER, rail.block().getLocation().add(0, 1, 0), 1);
 
             for (MinecartMember<?> collidingMember : rail.members()) {
                 if (!group.contains(collidingMember) && !collidingMembers.contains(collidingMember))
