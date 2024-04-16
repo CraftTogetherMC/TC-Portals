@@ -549,18 +549,13 @@ public class PortalHandler implements Listener {
                 return true;
             }
 
-            Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    world.spawn(location, entityClass, spawnedEntity -> {
-                        spawnedEntity.setInvulnerable(true);
+            Bukkit.getScheduler().runTask(plugin, () -> world.spawn(location, entityClass, spawnedEntity -> {
+                spawnedEntity.setInvulnerable(true);
 
-                        // Load received NBT to spawned Entity
-                        EntityHandle entityHandle = EntityHandle.fromBukkit(spawnedEntity);
-                        entityHandle.loadFromNBT(event.getTagCompound());
-                    });
-                }
-            });
+                // Load received NBT to spawned Entity
+                EntityHandle entityHandle = EntityHandle.fromBukkit(spawnedEntity);
+                entityHandle.loadFromNBT(event.getTagCompound());
+            }));
 
             return true;
         }, 0L, 10L);
