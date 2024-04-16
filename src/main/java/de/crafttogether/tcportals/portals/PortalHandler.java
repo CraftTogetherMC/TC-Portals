@@ -624,6 +624,7 @@ public class PortalHandler implements Listener {
                 PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());
             }, 80L);
+            Passenger.remove(passenger.getUUID());
             return;
         }
 
@@ -634,6 +635,7 @@ public class PortalHandler implements Listener {
             Util.debug("Could not find train (" + passenger.getTrainName() + ") for player " + player.getName());
             Localization.PORTAL_EXIT_NOTRAIN.message(player,
                     Placeholder.set("train", passenger.getTrainName()));
+            Passenger.remove(passenger.getUUID());
             return;
         }
 
