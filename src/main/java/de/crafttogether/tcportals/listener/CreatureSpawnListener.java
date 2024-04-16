@@ -14,7 +14,7 @@ public class CreatureSpawnListener implements Listener {
     public void onSpawn(CreatureSpawnEvent event) {
         // Look if entity should be a passenger
         Passenger passenger = Passenger.get(event.getEntity().getUniqueId());
-        Bukkit.getLogger().info("CreatureSpawnEvent");
+
         if (passenger != null)
             PortalHandler.reEnterEntity(passenger, event);
     }
