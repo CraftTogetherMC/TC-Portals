@@ -11,10 +11,12 @@ public class PlayerSpawnListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        /*
         // Look if player should be a passenger
         Passenger passenger = Passenger.get(event.getPlayer().getUniqueId());
 
         if (passenger != null)
             PortalHandler.reEnterPlayer(passenger, event);
+        */
     }
 }

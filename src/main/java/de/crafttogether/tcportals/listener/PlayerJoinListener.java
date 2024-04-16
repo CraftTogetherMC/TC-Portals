@@ -10,6 +10,8 @@ import de.crafttogether.common.update.BuildType;
 import de.crafttogether.common.update.UpdateChecker;
 import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
+import de.crafttogether.tcportals.portals.Passenger;
+import de.crafttogether.tcportals.portals.PortalHandler;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
@@ -24,11 +26,17 @@ import java.util.List;
 public class PlayerJoinListener implements Listener {
     private static final TCPortals plugin = TCPortals.plugin;
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        // Look if player should be a passenger
+        Passenger passenger = Passenger.get(event.getPlayer().getUniqueId());
+
+        if (passenger != null)
+            PortalHandler.reEnterPlayer(passenger, event);
+
         // Set Edit-Mode for TrainCarts
-        if (event.getPlayer().getVehicle() != null && event.getPlayer().getVehicle().getType().equals(EntityType.MINECART))
-            TrainCarts.plugin.getPlayer(event.getPlayer()).editMember(MinecartMemberStore.getFromEntity(event.getPlayer().getVehicle()));
+        //if (event.getPlayer().getVehicle() != null && event.getPlayer().getVehicle().getType().equals(EntityType.MINECART))
+        //    TrainCarts.plugin.getPlayer(event.getPlayer()).editMember(MinecartMemberStore.getFromEntity(event.getPlayer().getVehicle()));
 
         if (!event.getPlayer().hasPermission("tcdestinations.notify.updates"))
             return;

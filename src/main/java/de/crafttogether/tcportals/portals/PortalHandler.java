@@ -44,6 +44,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -527,29 +528,42 @@ public class PortalHandler implements Listener {
 
         Util.debug("Received entity (" + event.getType() + ") from " + event.getSource());
 
-        MinecartGroup group = TCHelper.getTrain(passenger.getTrainName());
-        if (group == null || group.get(passenger.getCartIndex()) == null) {
-            Util.debug("Unable to get spawnLocation for entity (" + event.getType().name() + ")");
-            return;
-        }
+        new PollingTask(() -> {
+            MinecartGroup group = TCHelper.getTrain(passenger.getTrainName());
+            if (group == null || group.get(passenger.getCartIndex()) == null) {
+                return false;
+            }
 
-        // Spawn Entity
-        Location location = group.get(passenger.getCartIndex()).getEntity().getLocation();
-        World world = location.getWorld();
-        Class<? extends Entity> entityClass = event.getType().getEntityClass();
+            if (passenger.hasError()) {
+                Util.debug("Unable to get spawnLocation for entity (" + event.getType().name() + "). Reason: " + passenger.getError());
+                return true;
+            }
 
-        if (entityClass == null || world == null) {
-            Util.debug("Failed to spawn entity (" + event.getType().name() + ")");
-            return;
-        }
+            // Spawn Entity
+            Location location = group.get(passenger.getCartIndex()).getEntity().getLocation();
+            World world = location.getWorld();
+            Class<? extends Entity> entityClass = event.getType().getEntityClass();
 
-        world.spawn(location, entityClass, spawnedEntity -> {
-            spawnedEntity.setInvulnerable(true);
+            if (entityClass == null || world == null) {
+                Util.debug("Failed to spawn entity (" + event.getType().name() + ")");
+                return true;
+            }
 
-            // Load received NBT to spawned Entity
-            EntityHandle entityHandle = EntityHandle.fromBukkit(spawnedEntity);
-            entityHandle.loadFromNBT(event.getTagCompound());
-        });
+            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    world.spawn(location, entityClass, spawnedEntity -> {
+                        spawnedEntity.setInvulnerable(true);
+
+                        // Load received NBT to spawned Entity
+                        EntityHandle entityHandle = EntityHandle.fromBukkit(spawnedEntity);
+                        entityHandle.loadFromNBT(event.getTagCompound());
+                    });
+                }
+            });
+
+            return true;
+        }, 0L, 10L);
     }
 
     public void sendPlayerToServer(Player player, Portal portal) {
@@ -608,7 +622,7 @@ public class PortalHandler implements Listener {
     }
 
     // Handle joined player if he was a passenger
-    public static void reEnterPlayer(Passenger passenger, PlayerSpawnLocationEvent event) {
+    public static void reEnterPlayer(Passenger passenger, PlayerJoinEvent event) {
         // Check if some error occurred
         if (passenger.hasError()) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
@@ -631,12 +645,14 @@ public class PortalHandler implements Listener {
         MinecartMember<?> member = group.get(passenger.getCartIndex());
 
         if (member instanceof MinecartMemberRideable) {
-            event.setSpawnLocation(member.getEntity().getLocation());
+            //event.setSpawnLocation(member.getEntity().getLocation());
+            player.teleport(member.getEntity().getLocation());
 
             if (player.isFlying())
                 player.setFlying(false);
 
             member.getEntity().getEntity().addPassenger(player);
+            TrainCarts.plugin.getPlayer(player).editMember(member);
             Passenger.remove(passenger.getUUID());
         }
         else
@@ -648,7 +664,7 @@ public class PortalHandler implements Listener {
 
     public void cleanCache(ConcurrentHashMap<MinecartGroup, ?> map) {
         for (MinecartGroup group : map.keySet()) {
-            if (group.isUnloaded() || group.isRemoved() || group.size() < 1) {
+            if (group.isUnloaded() || group.isRemoved() || group.isEmpty()) {
                 Util.debug("removed " + group.getProperties().getTrainName() + " from cache");
                 map.remove(group);
             }
