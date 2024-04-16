@@ -18,9 +18,12 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Util {
     public static final TCPortals plugin = TCPortals.plugin;
+
+    public static List<UUID> debugUUIDs = new ArrayList<>();
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkPermission(CommandSender sender, String permission) {
@@ -76,7 +79,7 @@ public class Util {
         // Broadcast to online players with permission
         if (broadcast) {
             for (Player player : Bukkit.getOnlinePlayers())
-                if (!player.hasPermission("tcportals.debug"))
+                if (debugUUIDs.contains(player.getUniqueId()))
                     PluginUtil.adventure().player(player).sendMessage(messageComponent);
         }
 
@@ -88,10 +91,10 @@ public class Util {
     }
 
     public static void debug(String message) {
-        debug(Component.text(message), false);
+        debug(Component.text(message), true);
     }
     
     public static void debug(Component message) {
-        debug(message, false);
+        debug(message, true);
     }
 }

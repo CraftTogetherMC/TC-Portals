@@ -9,10 +9,12 @@ import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
 import de.crafttogether.tcportals.portals.Passenger;
 import de.crafttogether.tcportals.portals.PortalQueue;
+import de.crafttogether.tcportals.util.Util;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +75,23 @@ public class Commands implements TabExecutor {
 
                 else if (args[1].equalsIgnoreCase("errors"))
                     message = Component.text("There are " + Passenger.errors().values().size() + " errors cached");
+
+                else if (args[1].equalsIgnoreCase("toggle")) {
+                    if (sender instanceof Player) {
+                        Player player = (Player) sender;
+                        if (Util.debugUUIDs.contains(player.getUniqueId())) {
+                            message = Component.text("DebugMode disabled");
+                            Util.debugUUIDs.remove(player.getUniqueId());
+                        }
+                        else {
+                            message = Component.text("DebugMode enabled");
+                            Util.debugUUIDs.add(player.getUniqueId());
+                        }
+                    }
+                    else {
+                        plugin.getLogger().warning("This command can only be ran by players");
+                    }
+                }
             }
 
             if (message != null) {
@@ -144,6 +163,7 @@ public class Commands implements TabExecutor {
             suggestions.add("portalQueue");
             suggestions.add("passenger");
             suggestions.add("errors");
+            suggestions.add("toggle");
         }
 
         return suggestions;

@@ -1,5 +1,8 @@
 package de.crafttogether.tcportals.listener;
 
+import com.bergerkiller.bukkit.tc.TrainCarts;
+import com.bergerkiller.bukkit.tc.controller.MinecartMember;
+import com.bergerkiller.bukkit.tc.controller.MinecartMemberStore;
 import de.crafttogether.TCPortals;
 import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
 import de.crafttogether.common.localization.Placeholder;
@@ -8,6 +11,8 @@ import de.crafttogether.common.update.UpdateChecker;
 import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,6 +26,10 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        // Set Edit-Mode for TrainCarts
+        if (event.getPlayer().getVehicle() != null && event.getPlayer().getVehicle().getType().equals(EntityType.MINECART))
+            TrainCarts.plugin.getPlayer(event.getPlayer()).editMember(MinecartMemberStore.getFromEntity(event.getPlayer().getVehicle()));
+
         if (!event.getPlayer().hasPermission("tcdestinations.notify.updates"))
             return;
 

@@ -178,9 +178,6 @@ public class PortalHandler implements Listener {
         for (Entity passenger : TCHelper.getPassengers(member)) {
             if (passenger instanceof Player)
                 sendPlayerToServer((Player) passenger, pendingTeleport.portal());
-
-            else if (passenger instanceof LivingEntity)
-                passenger.remove();
         }
 
         // Remove from cache
@@ -195,9 +192,8 @@ public class PortalHandler implements Listener {
             group.destroy();
             group.remove();
         } else {
-            Entity cartEntity = member.getEntity().getEntity();
-            group.removeSilent(member);
-            cartEntity.remove();
+            member.getEntity().getEntity().remove();
+            group.split(member.getIndex());
         }
     }
 
@@ -236,6 +232,7 @@ public class PortalHandler implements Listener {
         List<Passenger> passengers = new ArrayList<>();
         for (MinecartMember<?> member : group) {
             for (Entity entity : TCHelper.getPassengers(member)) {
+                Util.debug("Passenger (" + member.getIndex() + "): " + entity.getType().name() + " trainId: " + trainId + " name: " + group.getProperties().getTrainName());
                 Passenger passenger = new Passenger(trainId, entity.getUniqueId(), entity.getType(), member.getIndex());
                 passengers.add(passenger);
 
@@ -402,7 +399,7 @@ public class PortalHandler implements Listener {
             // Tell passengers
             Passenger.setTrainName(packet.id, group.getProperties().getTrainName());
 
-            // Avoid conflicts with other recently spawned trains, restore will be restored later
+            // Avoid conflicts with other recently spawned trains, will be restored later
             if (group.hasFuel())
                 queuedTrain.setFuelMap(TCHelper.getFuelMap(group, true));
 
@@ -412,13 +409,11 @@ public class PortalHandler implements Listener {
             group.getProperties().setCollision(CollisionOptions.CANCEL);
             group.getProperties().setWaitDistance(0);
 
-            // Remove wait-actions
-            for (TrainStatus status : group.getStatusInfo()) {
-                if (status instanceof TrainStatus.WaitingForTrain) {
-                    for (MinecartMember<?> member : group)
-                        member.getActions().getStatusInfo().remove(status);
-                }
-            }
+            // Set chunkloading
+            group.keepChunksLoaded(group.getProperties().getChunkLoadOptions().mode());
+
+            // Remove actions
+            group.getActions().clear();
 
             // Look if flags are used
             Sign sign = portal.getSign();
@@ -502,6 +497,9 @@ public class PortalHandler implements Listener {
         CommonTagCompound tagCompound = new CommonTagCompound();
         entityHandle.saveToNBT(tagCompound);
 
+        // Despawn
+        entity.remove();
+
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             TCPClient client = new TCPClient(portal.getTargetHost(), portal.getTargetPort(), null);
             client.sendAuth(plugin.getConfig().getString("Portals.Server.SecretKey"));
@@ -577,6 +575,9 @@ public class PortalHandler implements Listener {
         event.setCancelled(false);
 
         if (passenger.hasError()) {
+            Util.debug("Error while re-entering entity: ");
+            Util.debug(passenger.getError());
+
             Passenger.remove(passenger.getUUID());
             return;
         }
@@ -613,7 +614,7 @@ public class PortalHandler implements Listener {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());
-            }, 20L);
+            }, 80L);
             return;
         }
 

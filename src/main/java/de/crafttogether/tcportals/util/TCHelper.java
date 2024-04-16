@@ -24,6 +24,7 @@ import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -216,7 +217,7 @@ public class TCHelper {
     }
 
     public static boolean isTrackClear(MinecartGroup group, int lookAhead) {
-        if (group == null || group.size() < 1)
+        if (group == null || group.isEmpty())
             return true;
 
         List<MinecartMember<?>> collidingMembers = new ArrayList<>();
@@ -247,8 +248,12 @@ public class TCHelper {
         }
 
         for (RailPiece rail : rails) {
-            for (Player player : Bukkit.getOnlinePlayers())
-                player.spawnParticle(Particle.BLOCK_MARKER, rail.block().getLocation().add(0, 1, 0), 1);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (!Util.debugUUIDs.contains(player.getUniqueId()))
+                    continue;
+
+                player.spawnParticle(Particle.BLOCK_MARKER, rail.block().getLocation().add(0, 1, 0), 1, Bukkit.createBlockData(Material.LIGHT));
+            }
 
             for (MinecartMember<?> collidingMember : rail.members()) {
                 if (!group.contains(collidingMember) && !collidingMembers.contains(collidingMember))
@@ -256,7 +261,7 @@ public class TCHelper {
             }
         }
 
-        return collidingMembers.size() < 1;
+        return collidingMembers.isEmpty();
     }
 
     public static String groupToString(MinecartGroup group) {
