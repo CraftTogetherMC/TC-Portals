@@ -30,13 +30,8 @@ public class PlayerJoinListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         // Look if player should be a passenger
         Passenger passenger = Passenger.get(event.getPlayer().getUniqueId());
-
         if (passenger != null)
             PortalHandler.reEnterPlayer(passenger, event);
-
-        // Set Edit-Mode for TrainCarts
-        //if (event.getPlayer().getVehicle() != null && event.getPlayer().getVehicle().getType().equals(EntityType.MINECART))
-        //    TrainCarts.plugin.getPlayer(event.getPlayer()).editMember(MinecartMemberStore.getFromEntity(event.getPlayer().getVehicle()));
 
         if (!event.getPlayer().hasPermission("tcdestinations.notify.updates"))
             return;

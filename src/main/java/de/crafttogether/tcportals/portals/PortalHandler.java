@@ -640,7 +640,6 @@ public class PortalHandler implements Listener {
         MinecartMember<?> member = group.get(passenger.getCartIndex());
 
         if (member instanceof MinecartMemberRideable) {
-            //event.setSpawnLocation(member.getEntity().getLocation());
             player.teleport(member.getEntity().getLocation());
 
             if (player.isFlying())
@@ -648,13 +647,11 @@ public class PortalHandler implements Listener {
 
             member.getEntity().getEntity().addPassenger(player);
             TrainCarts.plugin.getPlayer(player).editMember(member);
-            Passenger.remove(passenger.getUUID());
         }
         else
             Util.debug("Unable to put player " + player.getName() + " back on train (" + group.getProperties().getTrainName() + ") the cart (" + passenger.getCartIndex() + ") is not rideable");
 
         Passenger.remove(passenger.getUUID());
-        Util.debug("Passenger (" + player.getName() + ") sucessfully reEntered");
     }
 
     public void cleanCache(ConcurrentHashMap<MinecartGroup, ?> map) {

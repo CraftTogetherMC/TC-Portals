@@ -59,6 +59,7 @@ public final class TCPortals extends JavaPlugin {
         pluginManager.registerEvents(new TrainExitListener(), this);
         pluginManager.registerEvents(new TrainMoveListener(), this);
         pluginManager.registerEvents(new PlayerJoinListener(), this);
+        pluginManager.registerEvents(new PlayerLeaveListener(), this);
         pluginManager.registerEvents(new PlayerSpawnListener(), this);
         pluginManager.registerEvents(new CreatureSpawnListener(), this);
         pluginManager.registerEvents(new ConnectionErrorListener(), this);
