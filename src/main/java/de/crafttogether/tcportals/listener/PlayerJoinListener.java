@@ -33,7 +33,7 @@ public class PlayerJoinListener implements Listener {
         if (passenger != null)
             PortalHandler.reEnterPlayer(passenger, event);
 
-        if (!event.getPlayer().hasPermission("tcdestinations.notify.updates"))
+        if (!event.getPlayer().hasPermission("tcportals.notify.updates"))
             return;
 
         Configuration config = plugin.getConfig();
@@ -43,8 +43,10 @@ public class PlayerJoinListener implements Listener {
             return;
 
         new UpdateChecker(plugin).checkUpdatesAsync((err, build, currentVersion, currentBuild) -> {
-            if (err != null)
-                err.printStackTrace();
+            if (err != null) {
+                plugin.getLogger().warning("An error occurred while receiving update information.");
+                plugin.getLogger().warning("Error: " + err.getMessage());
+            }
 
             if (build == null)
                 return;

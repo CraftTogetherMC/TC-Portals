@@ -90,8 +90,10 @@ public final class TCPortals extends JavaPlugin {
                 && getConfig().getBoolean("Settings.Updates.Notify.Console"))
         {
             new UpdateChecker(this).checkUpdatesAsync((err, build, currentVersion, currentBuild) -> {
-                if (err != null)
-                    err.printStackTrace();
+                if (err != null) {
+                    plugin.getLogger().warning("An error occurred while receiving update information.");
+                    plugin.getLogger().warning("Error: " + err.getMessage());
+                }
 
                 if (build == null)
                     return;
