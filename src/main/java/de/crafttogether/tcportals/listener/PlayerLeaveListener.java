@@ -1,6 +1,5 @@
 package de.crafttogether.tcportals.listener;
 
-import de.crafttogether.TCPortals;
 import de.crafttogether.tcportals.portals.Passenger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

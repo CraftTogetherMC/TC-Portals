@@ -66,7 +66,6 @@ public final class TCPortals extends JavaPlugin {
         pluginManager.registerEvents(new PlayerLeaveListener(), this);
         pluginManager.registerEvents(new PlayerSpawnListener(), this);
         pluginManager.registerEvents(new CreatureSpawnListener(), this);
-        pluginManager.registerEvents(new ConnectionErrorListener(), this);
 
         // Register PluginChannel
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");

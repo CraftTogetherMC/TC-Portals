@@ -1,5 +1,27 @@
 package de.crafttogether.tcportals.portals;
 
+import de.crafttogether.CTCommons;
+import de.crafttogether.common.NetworkLocation;
+import de.crafttogether.common.event.EventListener;
+import de.crafttogether.common.event.Listener;
+import de.crafttogether.common.localization.Placeholder;
+import de.crafttogether.common.messaging.MessagingClient;
+import de.crafttogether.common.messaging.MessagingService;
+import de.crafttogether.common.util.AudienceUtil;
+
+import de.crafttogether.TCPortals;
+import de.crafttogether.tcportals.Localization;
+import de.crafttogether.tcportals.net.events.EntityReceivedEvent;
+import de.crafttogether.tcportals.net.events.PacketReceivedEvent;
+import de.crafttogether.tcportals.net.packets.EntityPacket;
+import de.crafttogether.tcportals.net.packets.TrainPacket;
+import de.crafttogether.tcportals.signactions.SignActionPortal;
+import de.crafttogether.tcportals.signactions.SignActionPortalIn;
+import de.crafttogether.tcportals.signactions.SignActionPortalOut;
+import de.crafttogether.tcportals.util.PollingTask;
+import de.crafttogether.tcportals.util.TCHelper;
+import de.crafttogether.tcportals.util.Util;
+
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.nbt.CommonTagCompound;
 import com.bergerkiller.bukkit.tc.TrainCarts;
@@ -14,25 +36,7 @@ import com.bergerkiller.bukkit.tc.properties.standard.type.TrainNameFormat;
 import com.bergerkiller.bukkit.tc.rails.RailLookup;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.generated.net.minecraft.world.entity.EntityHandle;
-import de.crafttogether.TCPortals;
-import de.crafttogether.common.NetworkLocation;
-import de.crafttogether.common.localization.Placeholder;
-import de.crafttogether.common.messaging.AbstractConnection;
-import de.crafttogether.common.messaging.MessagingClient;
-import de.crafttogether.common.messaging.MessagingServer;
-import de.crafttogether.common.messaging.MessagingService;
-import de.crafttogether.common.util.AudienceUtil;
-import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.net.events.EntityReceivedEvent;
-import de.crafttogether.tcportals.net.events.PacketReceivedEvent;
-import de.crafttogether.tcportals.net.packets.EntityPacket;
-import de.crafttogether.tcportals.net.packets.TrainPacket;
-import de.crafttogether.tcportals.signactions.SignActionPortal;
-import de.crafttogether.tcportals.signactions.SignActionPortalIn;
-import de.crafttogether.tcportals.signactions.SignActionPortalOut;
-import de.crafttogether.tcportals.util.PollingTask;
-import de.crafttogether.tcportals.util.TCHelper;
-import de.crafttogether.tcportals.util.Util;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -41,8 +45,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
@@ -52,7 +54,6 @@ import org.bukkit.util.Vector;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,8 +81,8 @@ public class PortalHandler implements Listener {
         MessagingService.registerPacket(TrainPacket.class);
         MessagingService.registerPacket(EntityPacket.class);
 
-        // Register as EventHandler
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        // Register as CTCommons EventHandler
+        CTCommons.getEventManager().registerListener(TCPortals.platformLayer, this);
 
         // Register TrainCarts-ActionSigns
         registerActionSigns();
@@ -271,6 +272,7 @@ public class PortalHandler implements Listener {
 
         else {
             Util.debug("Train (" + packet.name + ") was sent to " + packet.target.getServer() + " with " + group.size() + " carts");
+            //TODO: ERROR
 
             // Send entities to target server
             for (Entity entity : TCHelper.getPassengers(group)) {
@@ -282,7 +284,7 @@ public class PortalHandler implements Listener {
         return success;
     }
 
-    @EventHandler
+    @EventListener
     public void receivePacket(PacketReceivedEvent event) {
         if (event.getPacket() instanceof TrainPacket)
             receiveTrain((TrainPacket) event.getPacket());
@@ -510,6 +512,7 @@ public class PortalHandler implements Listener {
 
             if (!success)
                 plugin.getLogger().warning("Unable to send entity (" + entity.getType() + ") to " + portal.getTargetLocation().getServer());
+                //TODO: ERROR
 
             else {
                 try {
@@ -522,7 +525,7 @@ public class PortalHandler implements Listener {
         });
     }
 
-    @EventHandler
+    @EventListener
     public void receiveEntity(EntityReceivedEvent event) {
         Passenger passenger = Passenger.get(event.getUuid());
         if (passenger == null)
