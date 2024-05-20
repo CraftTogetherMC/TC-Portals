@@ -7,7 +7,6 @@ import de.crafttogether.common.plugin.PluginInformation;
 import de.crafttogether.common.shaded.org.bstats.bukkit.Metrics;
 import de.crafttogether.common.update.BuildType;
 import de.crafttogether.common.update.UpdateChecker;
-import de.crafttogether.common.util.PluginUtil;
 import de.crafttogether.tcportals.Localization;
 import de.crafttogether.tcportals.commands.Commands;
 import de.crafttogether.tcportals.listener.*;
@@ -34,7 +33,7 @@ public final class TCPortals extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
         
         /* Check dependencies */
-        if (!pluginManager.isPluginEnabled("CTCommons")) {
+        if (!pluginManager.isPluginEnabled("CTCommonsBukkit")) {
             plugin.getLogger().warning("Couldn't find plugin: CTCommons");
             pluginManager.disablePlugin(plugin);
             return;
