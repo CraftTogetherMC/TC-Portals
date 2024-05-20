@@ -2,13 +2,11 @@ package de.crafttogether.tcportals.portals;
 
 import com.bergerkiller.bukkit.common.config.ConfigurationNode;
 import com.bergerkiller.bukkit.common.nbt.CommonTagCompound;
-import com.bergerkiller.bukkit.common.utils.StringUtil;
 import com.bergerkiller.bukkit.tc.TrainCarts;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartMember;
 import com.bergerkiller.bukkit.tc.controller.components.RailPiece;
 import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableGroup;
-import com.bergerkiller.bukkit.tc.controller.status.TrainStatus;
 import com.bergerkiller.bukkit.tc.controller.type.MinecartMemberRideable;
 import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.properties.standard.type.CollisionOptions;
@@ -19,10 +17,12 @@ import com.bergerkiller.generated.net.minecraft.world.entity.EntityHandle;
 import de.crafttogether.TCPortals;
 import de.crafttogether.common.NetworkLocation;
 import de.crafttogether.common.localization.Placeholder;
-import de.crafttogether.common.util.PluginUtil;
+import de.crafttogether.common.messaging.AbstractConnection;
+import de.crafttogether.common.messaging.MessagingClient;
+import de.crafttogether.common.messaging.MessagingServer;
+import de.crafttogether.common.messaging.MessagingService;
+import de.crafttogether.common.util.AudienceUtil;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.net.TCPClient;
-import de.crafttogether.tcportals.net.TCPServer;
 import de.crafttogether.tcportals.net.events.EntityReceivedEvent;
 import de.crafttogether.tcportals.net.events.PacketReceivedEvent;
 import de.crafttogether.tcportals.net.packets.EntityPacket;
@@ -48,11 +48,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,14 +65,20 @@ public class PortalHandler implements Listener {
     private static final SignActionPortalIn signActionPortalIn = new SignActionPortalIn();
     private static final SignActionPortalOut signActionPortalOut = new SignActionPortalOut();
 
-    private final TCPServer tcpServer;
     private final ConcurrentHashMap<Location, PortalQueue> portalQueues = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<MinecartGroup, PendingTeleport> pendingTeleports = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<MinecartGroup, ReceivedTrain> receivedTrains = new ConcurrentHashMap<>();
 
-    public PortalHandler(String host, int port) {
-        // Create Server Socket
-        tcpServer = new TCPServer(host, port);
+    public PortalHandler() {
+        if (!MessagingService.isEnabled()) {
+            plugin.getLogger().warning("Please enable CTCommonLib's MessagingService!");
+            plugin.onDisable();
+            return;
+        }
+
+        // Register Packets
+        MessagingService.registerPacket(TrainPacket.class);
+        MessagingService.registerPacket(EntityPacket.class);
 
         // Register as EventHandler
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -258,9 +264,7 @@ public class PortalHandler implements Listener {
         packet.source = plugin.getServerName();
 
         // Transfer train
-        TCPClient client = new TCPClient(portal.getTargetHost(), portal.getTargetPort(), trainId);
-        client.sendAuth(plugin.getConfig().getString("Portals.Server.SecretKey"));
-        boolean success = client.send(packet);
+        boolean success = MessagingService.toServer(portal.getTargetLocation().getServer(), packet);
 
         if (!success)
             plugin.getLogger().warning("Unable to send train " + packet.name + " to " + packet.target.getServer());
@@ -502,16 +506,14 @@ public class PortalHandler implements Listener {
         entity.remove();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            TCPClient client = new TCPClient(portal.getTargetHost(), portal.getTargetPort(), null);
-            client.sendAuth(plugin.getConfig().getString("Portals.Server.SecretKey"));
-            boolean success = client.send(new EntityPacket(entity.getUniqueId(), entity.getType()));
+            boolean success = MessagingService.toServer(portal.getTargetLocation().getServer(), new EntityPacket(entity.getUniqueId(), entity.getType()));
 
             if (!success)
                 plugin.getLogger().warning("Unable to send entity (" + entity.getType() + ") to " + portal.getTargetLocation().getServer());
 
             else {
                 try {
-                    tagCompound.writeToStream(client.getOutputStream(), false);
+                    tagCompound.writeToStream(MessagingClient.instance.getClientConnection().getOutputStream(), false);
                     Util.debug("Entity (" + entity.getType() + ") was sent to " + portal.getTargetLocation().getServer());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -586,7 +588,6 @@ public class PortalHandler implements Listener {
         if (passenger.hasError()) {
             Util.debug("Error while re-entering entity: ");
             Util.debug(passenger.getError());
-
             Passenger.remove(passenger.getUUID());
             return;
         }
@@ -621,7 +622,7 @@ public class PortalHandler implements Listener {
         // Check if some error occurred
         if (passenger.hasError()) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-                PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
+                AudienceUtil.getPlayer(event.getPlayer().getUniqueId()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());
             }, 80L);
             Passenger.remove(passenger.getUUID());
@@ -633,10 +634,16 @@ public class PortalHandler implements Listener {
 
         if (group == null) {
             Util.debug("Could not find train (" + passenger.getTrainName() + ") for player " + player.getName());
-            Localization.PORTAL_EXIT_NOTRAIN.message(player,
+            Localization.PORTAL_EXIT_NOTRAIN.message(player.getUniqueId(),
                     Placeholder.set("train", passenger.getTrainName()));
             Passenger.remove(passenger.getUUID());
             return;
+        }
+
+        if (group.size() < passenger.getCartIndex()) {
+            player.sendMessage("Ein Fehler ist aufgetreten.");
+            Util.debug("ERROR While reEntering " + player.getName());
+            Util.debug("Train has " + group.size() + " carts. Passenger-Index: " + passenger.getCartIndex());
         }
 
         MinecartMember<?> member = group.get(passenger.getCartIndex());
@@ -683,13 +690,6 @@ public class PortalHandler implements Listener {
         // Cancel all running tasks
         for (PortalQueue queue : portalQueues.values())
             queue.cancel();
-
-        // Close server
-        if (tcpServer != null)
-            tcpServer.close();
-
-        // Close all active clients
-        TCPClient.closeAll();
     }
 
     public Map<MinecartGroup, PendingTeleport> getPendingTeleports() {

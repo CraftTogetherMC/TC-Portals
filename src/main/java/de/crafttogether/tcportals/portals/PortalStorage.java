@@ -32,7 +32,7 @@ public class PortalStorage {
         this.portals = new TreeMap<>();
 
         // Initialize MySQLAdapter
-        this.mySQLAdapter = new MySQLAdapter(plugin,
+        this.mySQLAdapter = new MySQLAdapter(TCPortals.platformLayer,
                 this.plugin.getConfig().getString("MySQL.Host"),
                 this.plugin.getConfig().getInt("MySQL.Port"),
                 this.plugin.getConfig().getString("MySQL.Username"),
@@ -58,8 +58,6 @@ public class PortalStorage {
                         `id` int(11) NOT NULL,
                         `name` varchar(16) NOT NULL,
                         `type` varchar(16) NOT NULL,
-                        `host` varchar(128) DEFAULT NULL,
-                        `port` int(11) DEFAULT NULL,
                         `server` varchar(128) DEFAULT NULL,
                         `world` varchar(128) DEFAULT NULL,
                         `x` double DEFAULT NULL,
@@ -135,14 +133,12 @@ public class PortalStorage {
         return found;
     }
 
-    public Portal create(String name, Portal.PortalType type, String host, int port, NetworkLocation location) throws SQLException {
+    public Portal create(String name, Portal.PortalType type, NetworkLocation location) throws SQLException {
         MySQLConnection connection = this.mySQLAdapter.getConnection();
 
         int portalId = connection.insert("INSERT INTO `%sportals` SET " +
                 "`name` = '" + name + "', " +
                 "`type` = '" + type + "', " +
-                "`host` = '" + host + "', " +
-                "`port` = " + port + ", " +
                 "`server` = '" + location.getServer() + "', " +
                 "`world` = '" + location.getWorld() + "', " +
                 "`x` = " + location.getX() + ", " +
@@ -150,7 +146,7 @@ public class PortalStorage {
                 "`z` = " + location.getZ(), connection.getTablePrefix());
         connection.close();
 
-        Portal portal = new Portal(name, type, portalId, host, port, location);
+        Portal portal = new Portal(name, type, portalId, location);
 
         // Update cache
         this.portals.put(portalId, portal);
@@ -163,8 +159,6 @@ public class PortalStorage {
         connection.updateAsync("UPDATE `%sportals` SET " +
                 "`name`             = '" + portal.getName() + "', " +
                 "`type`             = '" + portal.getType().name() + "', " +
-                "`host`      = '" + portal.getTargetHost() + "', " +
-                "`port`      =  " + portal.getTargetPort() + ", " +
                 "`server`    = '" + portal.getTargetLocation().getServer() + "', " +
                 "`world`     = '" + portal.getTargetLocation().getWorld() + "', " +
                 "`x`         =  " + portal.getTargetLocation().getX() + ", " +
@@ -253,8 +247,6 @@ public class PortalStorage {
                     result.getString("name"),
                     Portal.PortalType.valueOf(result.getString("type")),
                     result.getInt("id"),
-                    result.getString("host"),
-                    result.getInt("port"),
                     targetLocation);
         }
         catch (Exception err) {

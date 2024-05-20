@@ -11,8 +11,6 @@ public class Portal {
     private Integer id;
     private String name;
     private PortalType type;
-    private String targetHost;
-    private Integer targetPort;
     private NetworkLocation targetLocation;
 
     @SuppressWarnings("unused")
@@ -20,12 +18,10 @@ public class Portal {
         IN, OUT, BIDIRECTIONAL
     }
 
-    public Portal(String name, PortalType type, Integer id, String targetHost, Integer targetPort, NetworkLocation targetLocation) {
+    public Portal(String name, PortalType type, Integer id, NetworkLocation targetLocation) {
         this.id = id;
         this.name = name;
         this.type = type;
-        this.targetHost = targetHost;
-        this.targetPort = targetPort;
         this.targetLocation = targetLocation;
     }
 
@@ -34,8 +30,6 @@ public class Portal {
         return this.name;
     }
     public PortalType getType() { return this.type; }
-    public String getTargetHost() { return targetHost; }
-    public Integer getTargetPort() { return targetPort; }
     public NetworkLocation getTargetLocation() { return targetLocation; }
 
     public void setId(Integer id) { this.id = id; }
@@ -43,8 +37,6 @@ public class Portal {
     public void setType(PortalType type) {
         this.type = type;
     }
-    public void setTargetHost(String targetHost) { this.targetHost = targetHost; }
-    public void setTargetPort(Integer targetPort) { this.targetPort = targetPort; }
     public void setTargetLocation(NetworkLocation targetLocation) { this.targetLocation = targetLocation; }
 
     public static boolean isValid(Sign sign) {
@@ -68,6 +60,6 @@ public class Portal {
     }
 
     public String toString() {
-        return "id=" + id + ", name=" + name + ", targetHost=" + targetHost + ", targetPort=" + targetPort + ", location=[" + (targetLocation == null ? null : targetLocation.toString()) + "]";
+        return "id=" + id + ", name=" + name + ", location=[" + (targetLocation == null ? null : targetLocation.toString()) + "]";
     }
 }

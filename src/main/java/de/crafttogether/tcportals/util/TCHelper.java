@@ -1,7 +1,6 @@
 package de.crafttogether.tcportals.util;
 
 import com.bergerkiller.bukkit.common.entity.type.CommonMinecartFurnace;
-import com.bergerkiller.bukkit.common.resources.ParticleType;
 import com.bergerkiller.bukkit.common.resources.SoundEffect;
 import com.bergerkiller.bukkit.common.utils.FaceUtil;
 import com.bergerkiller.bukkit.common.utils.WorldUtil;
@@ -18,9 +17,9 @@ import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.properties.TrainProperties;
 import com.bergerkiller.bukkit.tc.properties.TrainPropertiesStore;
 import com.bergerkiller.bukkit.tc.utils.TrackMovingPoint;
-import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
 import de.crafttogether.common.localization.Placeholder;
-import de.crafttogether.common.util.PluginUtil;
+import de.crafttogether.common.shaded.net.kyori.adventure.text.Component;
+import de.crafttogether.common.util.AudienceUtil;
 import de.crafttogether.tcportals.Localization;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -189,22 +188,22 @@ public class TCHelper {
 
     public static void sendMessage(MinecartMember<?> member, Localization localization, Placeholder... arguments) {
         for (Player passenger : getPlayerPassengers(member))
-            localization.message(passenger, arguments);
+            localization.message(passenger.getUniqueId(), arguments);
     }
 
     public static void sendMessage(MinecartGroup group, Localization localization, Placeholder... arguments) {
         for (Player passenger : getPlayerPassengers(group))
-            localization.message(passenger, arguments);
+            localization.message(passenger.getUniqueId(), arguments);
     }
 
     public static void sendMessage(MinecartMember<?> member, Component message) {
         for (Player passenger : getPlayerPassengers(member))
-            PluginUtil.adventure().player(passenger).sendMessage(message);
+            AudienceUtil.getPlayer(passenger.getUniqueId()).sendMessage(message);
     }
 
     public static void sendMessage(MinecartGroup group, Component message) {
         for (Player passenger : getPlayerPassengers(group))
-            PluginUtil.adventure().player(passenger).sendMessage(message);
+            AudienceUtil.getPlayer(passenger.getUniqueId()).sendMessage(message);
     }
 
     public static MinecartMember<?> getOccupyingMember(SpawnableGroup.SpawnLocationList spawnLocations) {

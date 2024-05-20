@@ -56,7 +56,7 @@ public class SignActionPortalIn extends SignAction {
 
         // Validate third line
         if (LogicUtil.nullOrEmpty(portalName)) {
-            Localization.PORTAL_CREATE_NONAME.message(event.getPlayer());
+            Localization.PORTAL_CREATE_NONAME.message(event.getPlayer().getUniqueId());
             TCHelper.displayError(event);
             return false;
         }
@@ -68,7 +68,7 @@ public class SignActionPortalIn extends SignAction {
                     .filter(portal -> portal.getType().equals(Portal.PortalType.OUT))
                     .collect(Collectors.toList());
         } catch (SQLException e) {
-            Localization.ERROR_DATABASE.message(event.getPlayer(),
+            Localization.ERROR_DATABASE.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("error", e.getMessage()));
 
             e.printStackTrace();
@@ -77,21 +77,21 @@ public class SignActionPortalIn extends SignAction {
         }
 
         if (portals.size() < 1)
-            Localization.PORTAL_CREATE_IN_NOTEXIST.message(event.getPlayer(),
+            Localization.PORTAL_CREATE_IN_NOTEXIST.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("name", portalName));
 
-        Localization.PORTAL_CREATE_IN_SUCCESS.message(event.getPlayer(),
+        Localization.PORTAL_CREATE_IN_SUCCESS.message(event.getPlayer().getUniqueId(),
                 Placeholder.set("name", portalName));
 
         String signType = event.isCartSign() ? "cart" : "train";
         if (event.getLine(3).contains("!mobs"))
-            Localization.PORTAL_FLAG_KILLMOBS.message(event.getPlayer(),Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_KILLMOBS.message(event.getPlayer().getUniqueId(),Placeholder.set("signType", signType));
         if (event.getLine(3).contains("-mobs"))
-            Localization.PORTAL_FLAG_DROPMOBS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_DROPMOBS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
         if (event.getLine(3).contains("!items"))
-            Localization.PORTAL_FLAG_KILLITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_KILLITEMS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
         if (event.getLine(3).contains("-items"))
-            Localization.PORTAL_FLAG_DROPITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_DROPITEMS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
 
         SignBuildOptions.create()
                 .setName(ChatColor.translateAlternateColorCodes('&', Localization.PORTAL_CREATE_IN_NAME.get()))

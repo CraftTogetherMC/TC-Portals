@@ -25,8 +25,6 @@ CREATE TABLE `tc_portals` (
     `id` int(11) NOT NULL,
     `name` varchar(16) NOT NULL,
     `type` varchar(16) NOT NULL,
-    `host` varchar(128) DEFAULT NULL,
-    `port` int(11) DEFAULT NULL,
     `server` varchar(128) DEFAULT NULL,
     `world` varchar(128) DEFAULT NULL,
     `x` double DEFAULT NULL,

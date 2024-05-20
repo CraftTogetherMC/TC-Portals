@@ -3,7 +3,7 @@ package de.crafttogether.tcportals.listener;
 import de.crafttogether.TCPortals;
 import de.crafttogether.common.localization.Placeholder;
 import de.crafttogether.tcportals.Localization;
-import de.crafttogether.tcportals.net.events.ConnectionErrorEvent;
+import de.crafttogether.tcportals.net.events.PortalErrorEvent;
 import de.crafttogether.tcportals.portals.Passenger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +12,7 @@ public class ConnectionErrorListener implements Listener {
     private static final TCPortals plugin = TCPortals.plugin;
 
     @EventHandler
-    public void handleError(ConnectionErrorEvent event) {
+    public void handleError(PortalErrorEvent event) {
         String trainName = Passenger.getTrainName(event.getTrainId());
 
         switch (event.getError()) {

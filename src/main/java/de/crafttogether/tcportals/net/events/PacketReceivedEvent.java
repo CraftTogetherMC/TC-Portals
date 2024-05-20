@@ -1,6 +1,6 @@
 package de.crafttogether.tcportals.net.events;
 
-import de.crafttogether.tcportals.net.packets.Packet;
+import de.crafttogether.common.messaging.packets.Packet;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;

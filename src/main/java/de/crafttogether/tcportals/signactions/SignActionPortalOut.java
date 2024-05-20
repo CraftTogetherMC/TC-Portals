@@ -45,7 +45,7 @@ public class SignActionPortalOut extends SignAction {
 
         // Validate third line
         if (LogicUtil.nullOrEmpty(portalName)) {
-            Localization.PORTAL_CREATE_NONAME.message(event.getPlayer());
+            Localization.PORTAL_CREATE_NONAME.message(event.getPlayer().getUniqueId());
             TCHelper.displayError(event);
             return false;
         }
@@ -58,7 +58,7 @@ public class SignActionPortalOut extends SignAction {
                     .collect(Collectors.toList());
 
         } catch (SQLException e) {
-            Localization.ERROR_DATABASE.message(event.getPlayer(),
+            Localization.ERROR_DATABASE.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("error", e.getMessage()));
 
             e.printStackTrace();
@@ -72,11 +72,9 @@ public class SignActionPortalOut extends SignAction {
                 plugin.getPortalStorage().create(
                         portalName,
                         Portal.PortalType.OUT,
-                        plugin.getConfig().getString("Portals.Server.PublicAddress"),
-                        plugin.getConfig().getInt("Portals.Server.Port"),
                         NetworkLocation.fromBukkitLocation(event.getLocation(), plugin.getServerName()));
             } catch (SQLException e) {
-                Localization.ERROR_DATABASE.message(event.getPlayer(),
+                Localization.ERROR_DATABASE.message(event.getPlayer().getUniqueId(),
                         Placeholder.set("error", e.getMessage()));
 
                 e.printStackTrace();
@@ -84,7 +82,7 @@ public class SignActionPortalOut extends SignAction {
                 return false;
             }
 
-            Localization.PORTAL_CREATE_OUT_SUCCESS.message(event.getPlayer(),
+            Localization.PORTAL_CREATE_OUT_SUCCESS.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("name", portalName));
         }
 
@@ -92,7 +90,7 @@ public class SignActionPortalOut extends SignAction {
         else {
             Portal portal = portals.get(0);
 
-            Localization.PORTAL_CREATE_OUT_EXIST.message(event.getPlayer(),
+            Localization.PORTAL_CREATE_OUT_EXIST.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("name", portal.getName()),
                     Placeholder.set("server", portal.getTargetLocation().getServer()),
                     Placeholder.set("world", portal.getTargetLocation().getWorld()),
@@ -105,13 +103,13 @@ public class SignActionPortalOut extends SignAction {
 
         String signType = event.isCartSign() ? "cart" : "train";
         if (event.getLine(3).contains("!mobs"))
-            Localization.PORTAL_FLAG_KILLMOBS.message(event.getPlayer(),Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_KILLMOBS.message(event.getPlayer().getUniqueId(),Placeholder.set("signType", signType));
         if (event.getLine(3).contains("-mobs"))
-            Localization.PORTAL_FLAG_DROPMOBS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_DROPMOBS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
         if (event.getLine(3).contains("!items"))
-            Localization.PORTAL_FLAG_KILLITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_KILLITEMS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
         if (event.getLine(3).contains("-items"))
-            Localization.PORTAL_FLAG_DROPITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_DROPITEMS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
 
         SignBuildOptions.create()
                 .setName(ChatColor.translateAlternateColorCodes('&', Localization.PORTAL_CREATE_OUT_NAME.get()))

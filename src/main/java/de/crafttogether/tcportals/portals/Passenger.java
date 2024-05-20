@@ -1,13 +1,13 @@
 package de.crafttogether.tcportals.portals;
 
-import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
+import de.crafttogether.common.shaded.net.kyori.adventure.text.Component;
+import de.crafttogether.common.util.AudienceUtil;
 import de.crafttogether.common.util.PluginUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -88,7 +88,7 @@ public class Passenger implements Serializable {
         for (Passenger passenger : passengerList) {
             Player player = Bukkit.getPlayer(passenger.getUUID());
             if (player != null && player.isOnline())
-                PluginUtil.adventure().player(player).sendMessage(message);
+                AudienceUtil.getPlayer(player.getUniqueId()).sendMessage(message);
         }
     }
 

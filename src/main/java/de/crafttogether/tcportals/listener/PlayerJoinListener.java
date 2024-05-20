@@ -1,20 +1,15 @@
 package de.crafttogether.tcportals.listener;
 
-import com.bergerkiller.bukkit.tc.TrainCarts;
-import com.bergerkiller.bukkit.tc.controller.MinecartMember;
-import com.bergerkiller.bukkit.tc.controller.MinecartMemberStore;
 import de.crafttogether.TCPortals;
-import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
 import de.crafttogether.common.localization.Placeholder;
+import de.crafttogether.common.shaded.net.kyori.adventure.text.Component;
 import de.crafttogether.common.update.BuildType;
 import de.crafttogether.common.update.UpdateChecker;
-import de.crafttogether.common.util.PluginUtil;
+import de.crafttogether.common.util.AudienceUtil;
 import de.crafttogether.tcportals.Localization;
 import de.crafttogether.tcportals.portals.Passenger;
 import de.crafttogether.tcportals.portals.PortalHandler;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,7 +37,7 @@ public class PlayerJoinListener implements Listener {
                 || !config.getBoolean("Settings.Updates.Notify.InGame"))
             return;
 
-        new UpdateChecker(plugin).checkUpdatesAsync((err, build, currentVersion, currentBuild) -> {
+        new UpdateChecker(TCPortals.platformLayer).checkUpdatesAsync((err, installedVersion, installedBuild, build) -> {
             if (err != null) {
                 plugin.getLogger().warning("An error occurred while receiving update information.");
                 plugin.getLogger().warning("Error: " + err.getMessage());
@@ -59,15 +54,15 @@ public class PlayerJoinListener implements Listener {
             resolvers.add(Placeholder.set("fileName", build.getFileName()));
             resolvers.add(Placeholder.set("fileSize", build.getHumanReadableFileSize()));
             resolvers.add(Placeholder.set("url", build.getUrl()));
-            resolvers.add(Placeholder.set("currentVersion", currentVersion));
-            resolvers.add(Placeholder.set("currentBuild", currentBuild));
+            resolvers.add(Placeholder.set("currentVersion", installedVersion));
+            resolvers.add(Placeholder.set("currentBuild", installedBuild));
 
             if (build.getType().equals(BuildType.RELEASE))
                 message = Localization.UPDATE_RELEASE.deserialize(resolvers);
             else
                 message = Localization.UPDATE_DEVBUILD.deserialize(resolvers);
 
-            PluginUtil.adventure().player(event.getPlayer()).sendMessage(message);
+            AudienceUtil.getPlayer(event.getPlayer().getUniqueId()).sendMessage(message);
         }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"), 40L);
     }
 }

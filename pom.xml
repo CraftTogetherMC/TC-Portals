@@ -6,7 +6,7 @@
 
 <groupId>de.crafttogether</groupId>
 <artifactId>TCPortals</artifactId>
-<version>1.0-BETA3</version>
+<version>1.0-BETA4</version>
 <packaging>jar</packaging>
 
 <name>TCPortals</name>
@@ -15,7 +15,7 @@
 
 <properties>
     <java.version>17</java.version>
-    <project.ctcommons.version>1.0-BETA3</project.ctcommons.version>
+    <project.ctcommons.version>1.0-BETA4</project.ctcommons.version>
     <project.spigot.version>1.20.1-R0.1-SNAPSHOT</project.spigot.version>
     <project.bkcommonlib.version>1.20.4-v4-SNAPSHOT</project.bkcommonlib.version>
     <project.traincarts.version>1.20.4-v2-SNAPSHOT</project.traincarts.version>
@@ -63,25 +63,6 @@
             </executions>
             <configuration>
                 <createDependencyReducedPom>false</createDependencyReducedPom>
-                <relocations>
-                    <!-- BKCommonLib relocations of Cloud command framework -->
-                    <relocation>
-                        <pattern>cloud.commandframework</pattern>
-                        <shadedPattern>com.bergerkiller.bukkit.common.dep.cloud</shadedPattern>
-                    </relocation>
-                    <relocation>
-                        <pattern>io.leangen.geantyref</pattern>
-                        <shadedPattern>com.bergerkiller.bukkit.common.dep.typetoken</shadedPattern>
-                    </relocation>
-                    <relocation>
-                        <pattern>me.lucko.commodore</pattern>
-                        <shadedPattern>com.bergerkiller.bukkit.common.dep.me.lucko.commodore</shadedPattern>
-                    </relocation>
-                    <relocation>
-                        <pattern>net.kyori</pattern>
-                        <shadedPattern>de.crafttogether.common.dep.net.kyori</shadedPattern>
-                    </relocation>
-                </relocations>
             </configuration>
         </plugin>
 
@@ -144,6 +125,13 @@
         <groupId>de.crafttogether</groupId>
         <artifactId>CTCommons</artifactId>
         <version>${project.ctcommons.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>de.crafttogether</groupId>
+        <artifactId>platform-abstraction-layer-api</artifactId>
+        <version>5.0.0</version>
         <scope>provided</scope>
     </dependency>
 

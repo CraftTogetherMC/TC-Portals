@@ -1,7 +1,10 @@
 package de.crafttogether;
 
-import de.crafttogether.common.dep.org.bstats.bukkit.Metrics;
 import de.crafttogether.common.localization.LocalizationManager;
+import de.crafttogether.common.plugin.BukkitPlatformLayer;
+import de.crafttogether.common.plugin.PlatformAbstractionLayer;
+import de.crafttogether.common.plugin.PluginInformation;
+import de.crafttogether.common.shaded.org.bstats.bukkit.Metrics;
 import de.crafttogether.common.update.BuildType;
 import de.crafttogether.common.update.UpdateChecker;
 import de.crafttogether.common.util.PluginUtil;
@@ -16,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TCPortals extends JavaPlugin {
     public static TCPortals plugin;
+    public static PlatformAbstractionLayer platformLayer;
 
     private String serverName;
     private LocalizationManager localizationManager;
@@ -25,6 +29,7 @@ public final class TCPortals extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        platformLayer = new BukkitPlatformLayer(this);
 
         PluginManager pluginManager = getServer().getPluginManager();
         
@@ -68,7 +73,7 @@ public final class TCPortals extends JavaPlugin {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         // Initialize LocalizationManager
-        localizationManager = new LocalizationManager(this, Localization.class, "en_EN", "locales");
+        localizationManager = new LocalizationManager(platformLayer, Localization.class, "en_EN", "locales");
         localizationManager.loadLocalization(getConfig().getString("Settings.Language"));
         localizationManager.addTagResolver("prefix", Localization.PREFIX.deserialize());
 
@@ -80,7 +85,7 @@ public final class TCPortals extends JavaPlugin {
         }
 
         // Initialize PortalHandler
-        portalHandler = new PortalHandler(getConfig().getString("Portals.Server.BindAddress"), getConfig().getInt("Portals.Server.Port"));
+        portalHandler = new PortalHandler();
 
         // Register Commands
         new Commands();
@@ -89,7 +94,7 @@ public final class TCPortals extends JavaPlugin {
         if (!getConfig().getBoolean("Settings.Updates.Notify.DisableNotifications")
                 && getConfig().getBoolean("Settings.Updates.Notify.Console"))
         {
-            new UpdateChecker(this).checkUpdatesAsync((err, build, currentVersion, currentBuild) -> {
+            new UpdateChecker(platformLayer).checkUpdatesAsync((err, installedVersion, installedBuild, build) -> {
                 if (err != null) {
                     plugin.getLogger().warning("An error occurred while receiving update information.");
                     plugin.getLogger().warning("Error: " + err.getMessage());
@@ -108,7 +113,7 @@ public final class TCPortals extends JavaPlugin {
                     plugin.getLogger().warning("You can download it here: " + build.getUrl());
                     plugin.getLogger().warning("Version: " + build.getVersion() + " (build: " + build.getNumber() + ")");
                     plugin.getLogger().warning("FileName: " + build.getFileName() + " FileSize: " + build.getHumanReadableFileSize());
-                    plugin.getLogger().warning("You are on version: " + currentVersion + " (build: " + currentBuild + ")");
+                    plugin.getLogger().warning("You are on version: " + installedVersion + " (build: " + installedBuild + ")");
                 });
             }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"));
         }
@@ -116,8 +121,8 @@ public final class TCPortals extends JavaPlugin {
         // bStats
         new Metrics(this, 17418);
 
-        String build = PluginUtil.getPluginFile(this).getString("build");
-        getLogger().info(plugin.getDescription().getName() + " v" + plugin.getDescription().getVersion() + " (build: " + build + ") enabled.");
+        PluginInformation pluginInformation = platformLayer.getPluginInformation();
+        getLogger().info(pluginInformation.getName() + " v" + pluginInformation.getVersion() + " (build: " + pluginInformation.getBuild() + ") enabled.");
     }
 
     @Override

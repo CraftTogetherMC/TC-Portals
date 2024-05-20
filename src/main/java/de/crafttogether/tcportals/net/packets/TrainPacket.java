@@ -1,13 +1,14 @@
 package de.crafttogether.tcportals.net.packets;
 
 import de.crafttogether.common.NetworkLocation;
+import de.crafttogether.common.messaging.packets.Packet;
 import de.crafttogether.tcportals.portals.Passenger;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class TrainPacket implements Packet {
+public class TrainPacket extends Packet {
     public final UUID id;
 
     public String name;
