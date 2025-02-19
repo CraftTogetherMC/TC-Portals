@@ -2,7 +2,6 @@ package de.crafttogether.tcportals.portals;
 
 import de.crafttogether.common.shaded.net.kyori.adventure.text.Component;
 import de.crafttogether.common.util.AudienceUtil;
-import de.crafttogether.common.util.PluginUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;

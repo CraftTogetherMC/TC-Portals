@@ -4,15 +4,16 @@ import de.crafttogether.common.localization.LocalizationManager;
 import de.crafttogether.common.plugin.BukkitPlatformLayer;
 import de.crafttogether.common.plugin.PlatformAbstractionLayer;
 import de.crafttogether.common.plugin.PluginInformation;
+import de.crafttogether.common.shaded.net.kyori.adventure.text.Component;
 import de.crafttogether.common.shaded.org.bstats.bukkit.Metrics;
-import de.crafttogether.common.update.BuildType;
-import de.crafttogether.common.update.UpdateChecker;
+import de.crafttogether.common.util.AudienceUtil;
+import de.crafttogether.ctcommons.commands.UpdateCommand;
 import de.crafttogether.tcportals.Localization;
+import de.crafttogether.tcportals.Update;
 import de.crafttogether.tcportals.commands.Commands;
 import de.crafttogether.tcportals.listener.*;
 import de.crafttogether.tcportals.portals.PortalHandler;
 import de.crafttogether.tcportals.portals.PortalStorage;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -89,7 +90,27 @@ public final class TCPortals extends JavaPlugin {
         new Commands();
 
         // Check for updates
-        if (!getConfig().getBoolean("Settings.Updates.Notify.DisableNotifications")
+        if (!getConfig().getBoolean("Settings.Updates.Notify.DisableNotifications") && getConfig().getBoolean("Settings.Updates.Notify.Console")) {
+            getLogger().warning("CHECKUPDATES");
+            Update.check((err, feedback) -> {
+                getLogger().warning("RESULT");
+                getLogger().warning("Error");
+                getLogger().warning(err != null ? err.toString() : null);
+                getLogger().warning("Feedback");
+                getLogger().warning(feedback != null ? feedback.toString() : null);
+
+                AudienceUtil.getConsole().sendMessage(
+                        Component.text("[" + platformLayer.getPluginInformation().getName() + "]:")
+                                .appendNewline()
+                                .append(err == null ? feedback : Component.text(err.getMessage()))
+                );
+            }, 0L);
+        }
+        else
+            getLogger().warning("CHECKUPDATES DISABLED");
+
+        // Check for updates
+        /*if (!getConfig().getBoolean("Settings.Updates.Notify.DisableNotifications")
                 && getConfig().getBoolean("Settings.Updates.Notify.Console"))
         {
             new UpdateChecker(platformLayer).checkUpdatesAsync((err, installedVersion, installedBuild, build) -> {
@@ -115,6 +136,7 @@ public final class TCPortals extends JavaPlugin {
                 });
             }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"));
         }
+         */
 
         // bStats
         new Metrics(this, 17418);

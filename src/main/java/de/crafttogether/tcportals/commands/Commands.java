@@ -1,13 +1,17 @@
 package de.crafttogether.tcportals.commands;
 
+import de.crafttogether.CTCommons;
 import de.crafttogether.TCPortals;
 import de.crafttogether.common.localization.Placeholder;
 import de.crafttogether.common.shaded.net.kyori.adventure.text.Component;
+import de.crafttogether.common.shaded.net.kyori.adventure.text.ComponentLike;
 import de.crafttogether.common.update.BuildType;
 import de.crafttogether.common.update.UpdateChecker;
 import de.crafttogether.common.util.AudienceUtil;
 import de.crafttogether.common.util.PluginUtil;
+import de.crafttogether.ctcommons.commands.UpdateCommand;
 import de.crafttogether.tcportals.Localization;
+import de.crafttogether.tcportals.Update;
 import de.crafttogether.tcportals.portals.Passenger;
 import de.crafttogether.tcportals.portals.PortalQueue;
 import de.crafttogether.tcportals.util.Util;
@@ -46,9 +50,7 @@ public class Commands implements TabExecutor {
 
             plugin.getLogger().info("Reload completed...");
             AudienceUtil.Bukkit.audiences.sender(sender).sendMessage(Localization.CONFIG_RELOADED.deserialize());
-        }
-
-        else if (args.length > 0 && args[0].equals("debug")) {
+        } else if (args.length > 0 && args[0].equals("debug")) {
             Component message = Component.empty();
 
             if (args.length == 1)
@@ -63,8 +65,7 @@ public class Commands implements TabExecutor {
 
                     message = Component.text("There are " + plugin.getPortalHandler().getPortalQueues().values().size() + " open PortalQueues");
                     message = message.append(Component.text("With a total of " + queuedTrains + " queued."));
-                }
-                else if (args[1].equalsIgnoreCase("receivedTrains"))
+                } else if (args[1].equalsIgnoreCase("receivedTrains"))
                     message = Component.text("There are " + plugin.getPortalHandler().getReceivedTrains().values().size() + " receivedTrains cached");
 
                 else if (args[1].equalsIgnoreCase("pendingTeleports"))
@@ -82,13 +83,11 @@ public class Commands implements TabExecutor {
                         if (Util.debugUUIDs.contains(player.getUniqueId())) {
                             message = Component.text("DebugMode disabled");
                             Util.debugUUIDs.remove(player.getUniqueId());
-                        }
-                        else {
+                        } else {
                             message = Component.text("DebugMode enabled");
                             Util.debugUUIDs.add(player.getUniqueId());
                         }
-                    }
-                    else {
+                    } else {
                         plugin.getLogger().warning("This command can only be ran by players");
                     }
                 }
@@ -98,9 +97,11 @@ public class Commands implements TabExecutor {
                 AudienceUtil.Bukkit.audiences.sender(sender).sendMessage(message);
                 return true;
             }
-        }
+        } else if (args.length == 0) {
+            AudienceUtil.Bukkit.audiences.sender(sender).sendMessage(Localization.UPDATE_CHECK.deserialize());
+            Update.check((err, feedback) -> AudienceUtil.Bukkit.audiences.sender(sender).sendMessage(err == null ? feedback : (ComponentLike) net.kyori.adventure.text.Component.text(err.getMessage())), 0L);
 
-        else if(args.length == 0) {
+            /*
             new UpdateChecker(TCPortals.platformLayer).checkUpdatesAsync((err, installedVersion, installedBuild, build) -> {
                 if (err != null) {
                     plugin.getLogger().warning("An error occurred while receiving update information.");
@@ -139,6 +140,9 @@ public class Commands implements TabExecutor {
 
                 AudienceUtil.Bukkit.audiences.sender(sender).sendMessage(message);
             }, plugin.getConfig().getBoolean("Settings.Updates.CheckForDevBuilds"));
+        }
+        */
+
         }
 
         return true;
