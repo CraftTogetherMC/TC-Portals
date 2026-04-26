@@ -11,8 +11,8 @@
   
 # TC-Portals
 #### Requires: [TrainCarts](https://github.com/bergerhealer/TrainCarts), [CTCommons](https://github.com/CraftTogetherMC/CTCommons) and a MySQL-Database
-**Java-Version:** 17 or above  
-**Minecraft-Version:** 1.17.1 or above  
+**Java-Version:** 21 or above  
+**Minecraft-Version:** 1.21.11  
 
 TC-Portals is a plugin for Minecraft servers using [SpigotMC](https://www.spigotmc.org), [PaperMC](https://papermc.io) or forks of these projects.  
 It serves as an add-on for the [TrainCarts](https://github.com/bergerhealer/TrainCarts) plugin which adds ActionSigns, supporting cross-server teleporting of trains in a BungeeCord network.   
@@ -98,3 +98,13 @@ ALTER TABLE `tc_portals`
 
 COMMIT;
 ```
+
+
+## 1.21.11 update notes
+- Maven target updated to Java 21.
+- Spigot API updated to `1.21.11-R0.1-SNAPSHOT`.
+- BKCommonLib dependency updated to `1.21.11-v1-SNAPSHOT`.
+- TrainCarts dependency updated to `1.21.11-v3-SNAPSHOT`.
+- `plugin.yml` `api-version` updated to `1.21`.
+
+This was done as a source-level compatibility update. A full runtime verification against your exact CTCommons/BKCommonLib/TrainCarts build set is still recommended before production rollout.

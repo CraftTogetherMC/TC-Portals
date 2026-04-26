@@ -4,6 +4,7 @@ import de.crafttogether.TCPortals;
 import de.crafttogether.common.NetworkLocation;
 import de.crafttogether.common.mysql.MySQLAdapter;
 import de.crafttogether.common.mysql.MySQLConnection;
+import de.crafttogether.common.platform.bukkit.util.BukkitNetworkLocationAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -32,7 +33,7 @@ public class PortalStorage {
         this.portals = new TreeMap<>();
 
         // Initialize MySQLAdapter
-        this.mySQLAdapter = new MySQLAdapter(plugin,
+        this.mySQLAdapter = new MySQLAdapter(plugin.getPlatformLayer(),
                 this.plugin.getConfig().getString("MySQL.Host"),
                 this.plugin.getConfig().getInt("MySQL.Port"),
                 this.plugin.getConfig().getString("MySQL.Username"),
@@ -297,7 +298,8 @@ public class PortalStorage {
     public Portal getPortal(Location location) {
         for (Portal portal : this.portals.values()) {
             if (!portal.getTargetLocation().getServer().equals(this.plugin.getServerName())) continue;
-            if (portal.getTargetLocation().getBukkitLocation().equals(location)) return portal;
+            if (BukkitNetworkLocationAdapter.toBukkitLocation(portal.getTargetLocation()).equals(location))
+                 return portal;
         }
         return null;
     }

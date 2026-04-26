@@ -2,12 +2,57 @@ name: TCPortals
 version: ${project.version}
 build: ${project.build.number}
 main: de.crafttogether.TCPortals
-api-version: 1.17
-depend: [ CTCommons, BKCommonLib, Train_Carts ]
-authors: [ J0schlZ, Ceddix ]
+api-version: 1.21
+depend:
+  - CTCommonsBukkit
+  - BKCommonLib
+  - Train_Carts
+authors: [ J0schlZ, Ceddix, StonDragonlp ]
 description: TrainCarts-Addon for cross-server teleporting of trains (BungeeCord)
 website: https://github.com/CraftTogetherMC
 commands:
   tcportals:
-    description: Shows the current version of the plugin and informations about updates
-    usage: /tcportals
+    description: TC-Portals command
+    usage: /tcportals <reload|debug|list|ping>
+    aliases: [ tcp ]
+permissions:
+  tcportals.admin:
+    description: Full access to all TC-Portals features
+    default: op
+    children:
+      tcportals.sign.portal: true
+      tcportals.sign.portal-in: true
+      tcportals.sign.portal-out: true
+      tcportals.command.reload: true
+      tcportals.command.list: true
+      tcportals.command.ping: true
+      tcportals.command.debug: true
+      tcportals.portal.use.directional: true
+      tcportals.portal.use.bidirectional: true
+
+  tcportals.sign.portal:
+    default: op
+
+  tcportals.sign.portal-in:
+    default: op
+
+  tcportals.sign.portal-out:
+    default: op
+
+  tcportals.command.reload:
+    default: op
+
+  tcportals.command.list:
+    default: op
+
+  tcportals.command.ping:
+    default: op
+
+  tcportals.command.debug:
+    default: op
+
+  tcportals.portal.use.directional:
+    default: true
+
+  tcportals.portal.use.bidirectional:
+    default: true

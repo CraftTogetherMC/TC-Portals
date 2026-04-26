@@ -18,9 +18,9 @@ import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.properties.TrainProperties;
 import com.bergerkiller.bukkit.tc.properties.TrainPropertiesStore;
 import com.bergerkiller.bukkit.tc.utils.TrackMovingPoint;
-import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.Component;
 import de.crafttogether.common.localization.Placeholder;
-import de.crafttogether.common.util.PluginUtil;
+import de.crafttogether.common.util.AudienceUtil;
 import de.crafttogether.tcportals.Localization;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -189,22 +189,22 @@ public class TCHelper {
 
     public static void sendMessage(MinecartMember<?> member, Localization localization, Placeholder... arguments) {
         for (Player passenger : getPlayerPassengers(member))
-            localization.message(passenger, arguments);
+            localization.message(passenger.getUniqueId(), arguments);
     }
 
     public static void sendMessage(MinecartGroup group, Localization localization, Placeholder... arguments) {
         for (Player passenger : getPlayerPassengers(group))
-            localization.message(passenger, arguments);
+            localization.message(passenger.getUniqueId(), arguments);
     }
 
     public static void sendMessage(MinecartMember<?> member, Component message) {
         for (Player passenger : getPlayerPassengers(member))
-            PluginUtil.adventure().player(passenger).sendMessage(message);
+            AudienceUtil.getPlayer(passenger.getUniqueId()).sendMessage(message);
     }
 
     public static void sendMessage(MinecartGroup group, Component message) {
         for (Player passenger : getPlayerPassengers(group))
-            PluginUtil.adventure().player(passenger).sendMessage(message);
+            AudienceUtil.getPlayer(passenger.getUniqueId()).sendMessage(message);
     }
 
     public static MinecartMember<?> getOccupyingMember(SpawnableGroup.SpawnLocationList spawnLocations) {
@@ -277,10 +277,10 @@ public class TCHelper {
         return  switch (member.getEntity().getType()) {
             default -> "?";
             case MINECART -> "m";
-            case MINECART_CHEST -> "s";
-            case MINECART_FURNACE -> "p";
-            case MINECART_TNT -> "t";
-            case MINECART_HOPPER -> "h";
+            case CHEST_MINECART -> "s";
+            case FURNACE_MINECART -> "p";
+            case TNT_MINECART -> "t";
+            case HOPPER_MINECART -> "h";
         };
     }
 

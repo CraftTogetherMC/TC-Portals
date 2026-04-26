@@ -7,8 +7,8 @@ import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.SignActionType;
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions;
 import de.crafttogether.TCPortals;
-import de.crafttogether.common.NetworkLocation;
 import de.crafttogether.common.localization.Placeholder;
+import de.crafttogether.common.platform.bukkit.util.BukkitNetworkLocationAdapter;
 import de.crafttogether.tcportals.Localization;
 import de.crafttogether.tcportals.portals.Portal;
 import de.crafttogether.tcportals.portals.PortalHandler;
@@ -52,7 +52,8 @@ public class SignActionPortal extends SignAction {
 
     @Override
     public boolean build(SignChangeActionEvent event) {
-        if (!Util.checkPermission(event.getPlayer(), "tcportals.create.bidirectional")) {
+        if (!event.getPlayer().hasPermission("tcportals.sign.portal")
+                && !event.getPlayer().hasPermission("tcportals.admin")) {
             TCHelper.displayError(event);
             return false;
         }
@@ -62,7 +63,7 @@ public class SignActionPortal extends SignAction {
 
         // Validate third line
         if (LogicUtil.nullOrEmpty(portalName)) {
-            Localization.PORTAL_CREATE_NONAME.message(event.getPlayer());
+            Localization.PORTAL_CREATE_NONAME.message(event.getPlayer().getUniqueId());
             TCHelper.displayError(event);
             return false;
         }
@@ -74,7 +75,7 @@ public class SignActionPortal extends SignAction {
                     .filter(portal -> portal.getType().equals(Portal.PortalType.BIDIRECTIONAL))
                     .collect(Collectors.toList());
         } catch (SQLException e) {
-            Localization.ERROR_DATABASE.message(event.getPlayer(),
+            Localization.ERROR_DATABASE.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("error", e.getMessage()));
 
             e.printStackTrace();
@@ -87,12 +88,12 @@ public class SignActionPortal extends SignAction {
 
             // First sign created
             if (portals.size() == 0) {
-                Localization.PORTAL_CREATE_BIDIRECTIONAL_INFO_FIRST.message(event.getPlayer(),
+                Localization.PORTAL_CREATE_BIDIRECTIONAL_INFO_FIRST.message(event.getPlayer().getUniqueId(),
                         Placeholder.set("name", portalName));
             }
 
             // Sign updated
-            else if (portals.get(0).getTargetLocation().equals(NetworkLocation.fromBukkitLocation(event.getLocation(), plugin.getServerName()))) {
+            else if (portals.get(0).getTargetLocation().equals(BukkitNetworkLocationAdapter.fromBukkitLocation(event.getLocation(), plugin.getServerName()))) {
                 // TODO: Handle sign-updates
                 Util.debug("Sign update");
                 return true;
@@ -104,12 +105,12 @@ public class SignActionPortal extends SignAction {
 
                 // One sign on this server already exists
                 if (portal.getTargetLocation().getServer().equals(plugin.getServerName())) {
-                    Localization.PORTAL_CREATE_BIDIRECTIONAL_SAMESERVER.message(event.getPlayer());
+                    Localization.PORTAL_CREATE_BIDIRECTIONAL_SAMESERVER.message(event.getPlayer().getUniqueId());
                     TCHelper.displayError(event);
                     return false;
                 }
 
-                Localization.PORTAL_CREATE_BIDIRECTIONAL_INFO_SECOND.message(event.getPlayer(),
+                Localization.PORTAL_CREATE_BIDIRECTIONAL_INFO_SECOND.message(event.getPlayer().getUniqueId(),
                         Placeholder.set("name", portal.getName()),
                         Placeholder.set("server", portal.getTargetLocation().getServer()),
                         Placeholder.set("world", portal.getTargetLocation().getWorld()),
@@ -125,9 +126,9 @@ public class SignActionPortal extends SignAction {
                         Portal.PortalType.BIDIRECTIONAL,
                         plugin.getConfig().getString("Portals.Server.PublicAddress"),
                         plugin.getConfig().getInt("Portals.Server.Port"),
-                        NetworkLocation.fromBukkitLocation(event.getLocation(), plugin.getServerName()));
+                        BukkitNetworkLocationAdapter.fromBukkitLocation(event.getLocation(), plugin.getServerName()));
             } catch (SQLException e) {
-                Localization.ERROR_DATABASE.message(event.getPlayer(),
+                Localization.ERROR_DATABASE.message(event.getPlayer().getUniqueId(),
                         Placeholder.set("error", e.getMessage()));
 
                 e.printStackTrace();
@@ -135,13 +136,13 @@ public class SignActionPortal extends SignAction {
                 return false;
             }
 
-            Localization.PORTAL_CREATE_BIDIRECTIONAL_SUCCESS.message(event.getPlayer(),
+            Localization.PORTAL_CREATE_BIDIRECTIONAL_SUCCESS.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("name", portalName));
         }
 
         // There are already two signs
         else {
-            Localization.PORTAL_CREATE_BIDIRECTIONAL_EXISTS.message(event.getPlayer(),
+            Localization.PORTAL_CREATE_BIDIRECTIONAL_EXISTS.message(event.getPlayer().getUniqueId(),
                     Placeholder.set("name", portalName));
             TCHelper.displayError(event);
             return false;
@@ -149,13 +150,13 @@ public class SignActionPortal extends SignAction {
 
         String signType = event.isCartSign() ? "cart" : "train";
         if (event.getLine(3).contains("!mobs"))
-            Localization.PORTAL_FLAG_KILLMOBS.message(event.getPlayer(),Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_KILLMOBS.message(event.getPlayer().getUniqueId(),Placeholder.set("signType", signType));
         if (event.getLine(3).contains("-mobs"))
-            Localization.PORTAL_FLAG_DROPMOBS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_DROPMOBS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
         if (event.getLine(3).contains("!items"))
-            Localization.PORTAL_FLAG_KILLITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_KILLITEMS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
         if (event.getLine(3).contains("-items"))
-            Localization.PORTAL_FLAG_DROPITEMS.message(event.getPlayer(), Placeholder.set("signType", signType));
+            Localization.PORTAL_FLAG_DROPITEMS.message(event.getPlayer().getUniqueId(), Placeholder.set("signType", signType));
 
         SignBuildOptions.create()
                 .setName(ChatColor.translateAlternateColorCodes('&', Localization.PORTAL_CREATE_BIDIRECTIONAL_NAME.get()))

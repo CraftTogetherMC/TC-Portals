@@ -6,6 +6,8 @@ import de.crafttogether.tcportals.util.Util;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
+import java.io.StreamCorruptedException;
+import java.io.IOException;
 
 public class TCPServer extends Thread {
     private final String host;
@@ -47,25 +49,34 @@ public class TCPServer extends Thread {
                 if (connection == null)
                     continue;
 
-                TCPClient client = new TCPClient(connection);
-                Util.debug("[TCPServer]: " + client.getAddress() + " connected.", false);
+                TCPClient client = null;
+                try {
+                    client = new TCPClient(connection);
+                    Util.debug("[TCPServer]: " + client.getAddress() + " connected.", false);
 
-                // Should we accept remote connections?
-                boolean acceptRemote = TCPortals.plugin.getConfig().getBoolean("Portals.Server.AcceptRemoteConnections");
-                if (!acceptRemote && !client.getAddress().equals("127.0.0.1")) {
-                    client.send("ERROR:" + TCPClient.Error.NO_REMOTE_CONNECTIONS.name());
-                    client.disconnect();
+
+                    // Should we accept remote connections?
+                    boolean acceptRemote = TCPortals.plugin.getConfig().getBoolean("Portals.Server.AcceptRemoteConnections");
+                    if (!acceptRemote && !client.getAddress().equals("127.0.0.1")) {
+                        client.send("ERROR:" + TCPClient.Error.NO_REMOTE_CONNECTIONS.name());
+                        client.disconnect();
+                    }
+
+                    clients.add(client);
+
+                } catch (StreamCorruptedException ex) {
+                    Util.debug("[TCPServer] Invalid stream from " + connection.getInetAddress());
+                    connection.close();
+                } catch (IOException ex) {
+                    Util.debug("[TCPServer] Connection error from " + connection.getInetAddress() + ": " + ex.getMessage());
+                    connection.close();
                 }
-
-                clients.add(client);
             }
         } catch (BindException e) {
             TCPortals.plugin.getLogger().warning("[TCPServer]: Can't bind to " + port + ".. Port already in use!");
         } catch (IOException ex) {
             ex.printStackTrace();
-        }
-
-        finally {
+        } finally {
             close();
             Util.debug("[TCPServer]: Server stopped.", false);
         }
@@ -82,8 +93,9 @@ public class TCPServer extends Thread {
             try {
                 serverSocket.close();
                 serverSocket = null;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            catch (IOException e) { e.printStackTrace(); }
         }
     }
 }

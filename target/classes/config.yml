@@ -1,0 +1,29 @@
+Settings:
+  ServerName: lobby # Used to identify the server in a BungeeCord network
+  Language: en_EN
+  Updates:
+    DisableNotifications: false
+    CheckForDevBuilds: true
+    Notify:
+      Console: true
+      InGame: true
+  Debug: false
+
+Portals:
+  Server:
+    Port: 5000
+    BindAddress: 127.0.0.1
+    AcceptRemoteConnections: false
+    PublicAddress: 127.0.0.1
+    SecretKey: iliketrains
+  LaunchDelayTicks: 10
+  LaunchDistanceBlocks: 5
+
+MySQL:
+  Host: 127.0.0.1
+  Port: 3306
+  Database: database
+  Username: username
+  Password: password
+  TablePrefix: tc_
+  JDBCArgs: sslMode=true

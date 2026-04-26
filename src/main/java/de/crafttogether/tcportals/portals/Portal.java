@@ -3,6 +3,7 @@ package de.crafttogether.tcportals.portals;
 import com.bergerkiller.bukkit.common.utils.BlockUtil;
 import com.bergerkiller.bukkit.tc.SignActionHeader;
 import de.crafttogether.common.NetworkLocation;
+import de.crafttogether.common.platform.bukkit.util.BukkitNetworkLocationAdapter;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -57,7 +58,7 @@ public class Portal {
     }
 
     public Sign getSign() {
-        Location location = this.getTargetLocation().getBukkitLocation();
+        Location location = BukkitNetworkLocationAdapter.toBukkitLocation(this.getTargetLocation());
         if (location == null || location.getWorld() == null) return null;
 
         Block block = location.getWorld().getBlockAt(location);

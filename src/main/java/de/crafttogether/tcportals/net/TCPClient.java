@@ -37,18 +37,14 @@ public class TCPClient extends Thread {
         CONNECTION_REFUSED, INVALID_AUTHENTICATION, NOT_AUTHENTICATED, NO_REMOTE_CONNECTIONS
     }
 
-    public TCPClient(Socket connection) {
+    public TCPClient(Socket connection) throws IOException {
         this.trainId = null;
         this.connection = connection;
 
-        try {
-            outputStream = connection.getOutputStream();
-            inputStream = connection.getInputStream();
-            objOutputStream = new ObjectOutputStream(outputStream);
-            objInputStream = new ObjectInputStream(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        outputStream = connection.getOutputStream();
+        inputStream = connection.getInputStream();
+        objOutputStream = new ObjectOutputStream(outputStream);
+        objInputStream = new ObjectInputStream(inputStream);
 
         if (connection.isConnected() && objOutputStream != null)
             read();

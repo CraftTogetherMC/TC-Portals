@@ -19,7 +19,8 @@ import com.bergerkiller.generated.net.minecraft.world.entity.EntityHandle;
 import de.crafttogether.TCPortals;
 import de.crafttogether.common.NetworkLocation;
 import de.crafttogether.common.localization.Placeholder;
-import de.crafttogether.common.util.PluginUtil;
+import de.crafttogether.common.platform.bukkit.util.BukkitNetworkLocationAdapter;
+import de.crafttogether.common.util.AudienceUtil;
 import de.crafttogether.tcportals.Localization;
 import de.crafttogether.tcportals.net.TCPClient;
 import de.crafttogether.tcportals.net.TCPServer;
@@ -43,12 +44,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -88,9 +87,9 @@ public class PortalHandler implements Listener {
         String portalName = event.getLine(2);
         Portal.PortalType targetType = null;
 
-        if (event.getLine(1).equals("portal"))
+        if (event.getLine(1).equalsIgnoreCase("portal"))
             targetType = Portal.PortalType.BIDIRECTIONAL;
-        else if (event.getLine(1).equals("portal-in"))
+        else if (event.getLine(1).equalsIgnoreCase("portal-in"))
             targetType = Portal.PortalType.OUT;
 
         // Get existing portal-out -signs from database
@@ -132,7 +131,7 @@ public class PortalHandler implements Listener {
             TCHelper.clearInventory(group);
             clearItems = true;
         }
-        if (event.getLine(3).contains("-items"))  {
+        if (event.getLine(3).contains("-items")) {
             TCHelper.dropInventory(group);
             clearItems = true;
         }
@@ -216,9 +215,7 @@ public class PortalHandler implements Listener {
             if (i > 0 && event.isCartSign()) {
                 Util.debug("stripping cart from " + group.getProperties().getTrainName() + " which had " + group.size() + " minecarts");
                 trainConfig.getNode("carts").remove(String.valueOf(i));
-            }
-
-            else {
+            } else {
                 // Remove lastPathNode from cartProperties
                 if (node.contains("lastPathNode"))
                     node.remove("lastPathNode");
@@ -288,6 +285,9 @@ public class PortalHandler implements Listener {
         if (packet == null)
             return;
 
+        if (!shouldSpawnReceivedTrain(packet))
+            return;
+
         // Register passengers
         for (Passenger passenger : packet.passengers)
             Passenger.register(passenger);
@@ -311,7 +311,7 @@ public class PortalHandler implements Listener {
 
         // Portal not found
         NetworkLocation targetLocation = packet.target;
-        Portal portal = plugin.getPortalStorage().getPortal(targetLocation.getBukkitLocation());
+        Portal portal = plugin.getPortalStorage().getPortal(BukkitNetworkLocationAdapter.toBukkitLocation(targetLocation));
 
         if (portal == null || portal.getSign() == null) {
             Util.debug("Could not find a Portal at " + targetLocation.getWorld() + ", " + targetLocation.getX() + ", " + targetLocation.getY() + ", " + targetLocation.getZ());
@@ -369,11 +369,12 @@ public class PortalHandler implements Listener {
         }
 
         // Add to queue
-        Location portalLocation = portal.getTargetLocation().getBukkitLocation();
+        Location portalLocation = BukkitNetworkLocationAdapter.toBukkitLocation(portal.getTargetLocation());
+
         PortalQueue queue = portalQueues.get(portalLocation);
 
         if (queue == null) {
-            queue =  new PortalQueue(portal, this::handleReceivedTrain);
+            queue = new PortalQueue(portal, this::handleReceivedTrain);
             portalQueues.put(portalLocation, queue);
         }
 
@@ -437,9 +438,7 @@ public class PortalHandler implements Listener {
             boolean routeFixingDisabled = plugin.getConfig().getBoolean("Settings.DisableRouteFixing");
             if (!routeFixingDisabled && group.getProperties().getDestination().equals(plugin.getServerName()) && group.getProperties().getNextDestinationOnRoute() != null)
                 group.getProperties().setDestination(group.getProperties().getNextDestinationOnRoute());
-        }
-
-        else {
+        } else {
             MinecartGroup group = queuedTrain.getSpawnedGroup();
 
             // Check that the area isn't occupied by any other train or wait for the next tick
@@ -549,16 +548,99 @@ public class PortalHandler implements Listener {
                 return true;
             }
 
-            Bukkit.getScheduler().runTask(plugin, () -> world.spawn(location, entityClass, spawnedEntity -> {
-                spawnedEntity.setInvulnerable(true);
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                LivingEntity spawned = (LivingEntity) world.spawn(location, entityClass, spawnedEntity -> {
+                    spawnedEntity.setInvulnerable(true);
 
-                // Load received NBT to spawned Entity
-                EntityHandle entityHandle = EntityHandle.fromBukkit(spawnedEntity);
-                entityHandle.loadFromNBT(event.getTagCompound());
-            }));
+                    EntityHandle entityHandle = EntityHandle.fromBukkit(spawnedEntity);
+                    entityHandle.loadFromNBT(event.getTagCompound());
+                });
+
+                Bukkit.getScheduler().runTaskLater(plugin,
+                        () -> tryMountEntity(spawned, passenger, 10),
+                        5L);
+            });
 
             return true;
         }, 0L, 10L);
+    }
+
+    private void tryMountEntity(LivingEntity entity, Passenger passenger, int attemptsLeft) {
+        MinecartGroup group = TCHelper.getTrain(passenger.getTrainName());
+
+        if (group == null) {
+            if (attemptsLeft > 0) {
+                Bukkit.getScheduler().runTaskLater(plugin,
+                        () -> tryMountEntity(entity, passenger, attemptsLeft - 1),
+                        5L);
+                return;
+            }
+
+            Util.debug("Entity mount failed: train not found " + passenger.getTrainName());
+            cleanupFailedEntityMount(entity, passenger);
+            return;
+        }
+
+        if (passenger.getCartIndex() < 0 || passenger.getCartIndex() >= group.size()) {
+            Util.debug("Entity mount failed: invalid cart index "
+                    + passenger.getCartIndex()
+                    + " trainSize=" + group.size());
+
+            cleanupFailedEntityMount(entity, passenger);
+            return;
+        }
+
+        MinecartMember<?> member = group.get(passenger.getCartIndex());
+        Entity cartEntity = member.getEntity().getEntity();
+
+        if (cartEntity == null || !cartEntity.isValid() || cartEntity.isDead()) {
+            if (attemptsLeft > 0) {
+                Bukkit.getScheduler().runTaskLater(plugin,
+                        () -> tryMountEntity(entity, passenger, attemptsLeft - 1),
+                        5L);
+                return;
+            }
+
+            Util.debug("Entity mount failed: cart entity invalid");
+            cleanupFailedEntityMount(entity, passenger);
+            return;
+        }
+
+        entity.teleport(cartEntity.getLocation());
+
+        boolean mounted = cartEntity.addPassenger(entity);
+
+        Util.debug("Entity mount result: " + mounted
+                + " entity=" + entity.getType()
+                + " train=" + passenger.getTrainName()
+                + " cartPassengers=" + cartEntity.getPassengers().size()
+                + " attemptsLeft=" + attemptsLeft);
+
+        if (mounted) {
+            entity.setInvulnerable(false);
+            Passenger.remove(passenger.getUUID());
+            return;
+        }
+
+        if (attemptsLeft > 0) {
+            Bukkit.getScheduler().runTaskLater(plugin,
+                    () -> tryMountEntity(entity, passenger, attemptsLeft - 1),
+                    5L);
+            return;
+        }
+
+        cleanupFailedEntityMount(entity, passenger);
+    }
+
+    private void cleanupFailedEntityMount(LivingEntity entity, Passenger passenger) {
+        Passenger.remove(passenger.getUUID());
+
+        if (entity != null && entity.isValid() && !entity.isDead()) {
+            entity.setInvulnerable(false);
+            entity.remove();
+        }
+
+        Util.debug("Entity mount finally failed. Removed entity and passenger state.");
     }
 
     public void sendPlayerToServer(Player player, Portal portal) {
@@ -579,87 +661,109 @@ public class PortalHandler implements Listener {
         player.sendPluginMessage(plugin, "BungeeCord", bytes.toByteArray());
     }
 
-    // Handle spawned entity if it was a passenger
-    public static void reEnterEntity(Passenger passenger, CreatureSpawnEvent event) {
-        event.setCancelled(false);
-
-        if (passenger.hasError()) {
-            Util.debug("Error while re-entering entity: ");
-            Util.debug(passenger.getError());
-
-            Passenger.remove(passenger.getUUID());
-            return;
-        }
-
-        LivingEntity entity = event.getEntity();
-        MinecartGroup group = TCHelper.getTrain(passenger.getTrainName());
-
-        if (group == null) {
-            Util.debug("Could not find train (" + passenger.getTrainName() + ") for entity " + entity.getType());
-            Passenger.remove(passenger.getUUID());
-            return;
-        }
-
-        MinecartMember<?> member = group.get(passenger.getCartIndex());
-
-        if (member instanceof MinecartMemberRideable) {
-            entity.teleport(member.getEntity().getLocation());
-            member.getEntity().getEntity().addPassenger(entity);
-            entity.setInvulnerable(false);
-
-            Passenger.remove(passenger.getUUID());
-            Util.debug("Passenger (" + entity.getType() + ") " + entity.getUniqueId() + " sucessfully reEntered");
-        }
-        else
-            Util.debug("Unable to put entity " + entity.getType() + " back on train (" + group.getProperties().getTrainName() + ") the cart (" + passenger.getCartIndex() + ") is not rideable");
-
-        Passenger.remove(passenger.getUUID());
-    }
-
     // Handle joined player if he was a passenger
     public static void reEnterPlayer(Passenger passenger, PlayerJoinEvent event) {
-        // Check if some error occurred
+        reEnterPlayer(passenger, event.getPlayer(), 10);
+    }
+
+    private static void reEnterPlayer(Passenger passenger, Player player, int attemptsLeft) {
         if (passenger.hasError()) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-                PluginUtil.adventure().player(event.getPlayer()).sendMessage(passenger.getError());
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                AudienceUtil.getPlayer(player.getUniqueId()).sendMessage(passenger.getError());
                 Passenger.remove(passenger.getUUID());
             }, 80L);
             Passenger.remove(passenger.getUUID());
             return;
         }
 
-        Player player = event.getPlayer();
         MinecartGroup group = TCHelper.getTrain(passenger.getTrainName());
+        if (group == null || passenger.getCartIndex() >= group.size()) {
+            if (attemptsLeft > 0) {
+                Util.debug("Player re-enter retry: train/cart not ready train=" + passenger.getTrainName()
+                        + " player=" + player.getName()
+                        + " attemptsLeft=" + attemptsLeft);
+                Bukkit.getScheduler().runTaskLater(plugin, () ->
+                        reEnterPlayer(passenger, player, attemptsLeft - 1), 5L);
+                return;
+            }
 
-        if (group == null) {
             Util.debug("Could not find train (" + passenger.getTrainName() + ") for player " + player.getName());
-            Localization.PORTAL_EXIT_NOTRAIN.message(player,
+            Localization.PORTAL_EXIT_NOTRAIN.message(player.getUniqueId(),
                     Placeholder.set("train", passenger.getTrainName()));
             Passenger.remove(passenger.getUUID());
             return;
         }
 
         MinecartMember<?> member = group.get(passenger.getCartIndex());
-
-        if (member instanceof MinecartMemberRideable) {
-            player.teleport(member.getEntity().getLocation());
-
-            if (player.isFlying())
-                player.setFlying(false);
-
-            member.getEntity().getEntity().addPassenger(player);
-            TrainCarts.plugin.getPlayer(player).editMember(member);
+        if (!(member instanceof MinecartMemberRideable)) {
+            Util.debug("Unable to put player " + player.getName() + " back on train ("
+                    + group.getProperties().getTrainName() + ") the cart ("
+                    + passenger.getCartIndex() + ") is not rideable");
+            Passenger.remove(passenger.getUUID());
+            return;
         }
-        else
-            Util.debug("Unable to put player " + player.getName() + " back on train (" + group.getProperties().getTrainName() + ") the cart (" + passenger.getCartIndex() + ") is not rideable");
+
+        Entity cartEntity = member.getEntity().getEntity();
+        player.teleport(cartEntity.getLocation());
+
+        if (player.isFlying())
+            player.setFlying(false);
+
+        boolean mounted = cartEntity.addPassenger(player);
+        Util.debug("Player mount result: " + mounted
+                + " player=" + player.getName()
+                + " train=" + group.getProperties().getTrainName()
+                + " cartPassengers=" + cartEntity.getPassengers().size()
+                + " attemptsLeft=" + attemptsLeft);
+
+        if (!mounted && attemptsLeft > 0) {
+            Bukkit.getScheduler().runTaskLater(plugin, () ->
+                    reEnterPlayer(passenger, player, attemptsLeft - 1), 5L);
+            return;
+        }
+
+        if (mounted)
+            TrainCarts.plugin.getPlayer(player).editMember(member);
 
         Passenger.remove(passenger.getUUID());
     }
 
+    private boolean shouldSpawnReceivedTrain(TrainPacket packet) {
+        if (packet == null)
+            return false;
+
+        if (packet.passengers != null && !packet.passengers.isEmpty())
+            return true;
+
+        ConfigurationNode trainConfig = new ConfigurationNode();
+        trainConfig.loadFromString(packet.config);
+
+        for (ConfigurationNode cartNode : trainConfig.getNode("carts").getNodes()) {
+            if (cartNode.contains("data.contents"))
+                return true;
+        }
+
+        Util.debug("Skipping received train (" + packet.name + ") because it has no passengers and no items.");
+        return false;
+    }
+
     public void cleanCache(ConcurrentHashMap<MinecartGroup, ?> map) {
         for (MinecartGroup group : map.keySet()) {
-            if (group.isUnloaded() || group.isRemoved() || group.isEmpty()) {
-                Util.debug("removed " + group.getProperties().getTrainName() + " from cache");
+            boolean remove = false;
+            String trainName = "<unloaded>";
+
+            try {
+                remove = group.isUnloaded() || group.isRemoved() || group.isEmpty();
+
+                if (!group.isUnloaded() && !group.isRemoved()) {
+                    trainName = group.getProperties().getTrainName();
+                }
+            } catch (IllegalStateException ignored) {
+                remove = true;
+            }
+
+            if (remove) {
+                Util.debug("removed " + trainName + " from cache");
                 map.remove(group);
             }
         }

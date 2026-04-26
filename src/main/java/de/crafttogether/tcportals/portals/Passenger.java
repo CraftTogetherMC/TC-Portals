@@ -1,7 +1,7 @@
 package de.crafttogether.tcportals.portals;
 
-import de.crafttogether.common.dep.net.kyori.adventure.text.Component;
-import de.crafttogether.common.util.PluginUtil;
+import net.kyori.adventure.text.Component;
+import de.crafttogether.common.util.AudienceUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -88,7 +88,7 @@ public class Passenger implements Serializable {
         for (Passenger passenger : passengerList) {
             Player player = Bukkit.getPlayer(passenger.getUUID());
             if (player != null && player.isOnline())
-                PluginUtil.adventure().player(player).sendMessage(message);
+                AudienceUtil.getPlayer(player.getUniqueId()).sendMessage(message);
         }
     }
 
@@ -97,12 +97,8 @@ public class Passenger implements Serializable {
     }
 
     public static void removeTrain(UUID trainId) {
-        for (Passenger passenger : passengers.values()) {
-            if (passenger.trainId.equals(trainId)) {
-                passengers.remove(trainId);
-                errors.remove(trainId);
-            }
-        }
+        passengers.values().removeIf(passenger -> passenger.trainId.equals(trainId));
+        errors.remove(trainId);
     }
 
     public static Passenger get(UUID uuid) {
@@ -115,7 +111,7 @@ public class Passenger implements Serializable {
         return passengers;
     }
 
-    public static ConcurrentHashMap<UUID, Passenger> errors() {
-        return errors();
+    public static ConcurrentHashMap<UUID, Component> errors() {
+        return errors;
     }
 }
