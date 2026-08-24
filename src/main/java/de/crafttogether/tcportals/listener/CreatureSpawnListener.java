@@ -15,7 +15,7 @@ public class CreatureSpawnListener implements Listener {
         // Look if entity should be a passenger
         Passenger passenger = Passenger.get(event.getEntity().getUniqueId());
 
-        if (passenger != null)
-            PortalHandler.reEnterEntity(passenger, event);
+        //if (passenger != null)
+            //PortalHandler.reEnterEntity(passenger, event);
     }
 }

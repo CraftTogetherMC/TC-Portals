@@ -3,6 +3,7 @@ de\crafttogether\tcportals\signactions\SignActionPortalIn.class
 de\crafttogether\tcportals\net\TCPClient.class
 de\crafttogether\tcportals\portals\Portal.class
 de\crafttogether\tcportals\signactions\SignActionPortalOut.class
+de\crafttogether\tcportals\listener\CreatureSpawnListener.class
 de\crafttogether\tcportals\portals\PendingTeleport.class
 de\crafttogether\tcportals\listener\TrainMoveListener.class
 de\crafttogether\tcportals\net\events\EntityReceivedEvent.class
@@ -23,6 +24,7 @@ de\crafttogether\tcportals\portals\Passenger.class
 de\crafttogether\tcportals\net\packets\Packet.class
 de\crafttogether\tcportals\net\TCPServer.class
 de\crafttogether\tcportals\portals\PortalStorage.class
+de\crafttogether\tcportals\listener\PlayerLeaveListener.class
 de\crafttogether\tcportals\listener\ConnectionErrorListener$1.class
 de\crafttogether\tcportals\util\PollingTask.class
 de\crafttogether\tcportals\Localization.class
@@ -32,6 +34,7 @@ de\crafttogether\tcportals\net\events\PacketReceivedEvent.class
 de\crafttogether\tcportals\portals\PortalHandler.class
 de\crafttogether\tcportals\portals\ReceivedTrain.class
 de\crafttogether\tcportals\portals\PortalQueue$QueuedTrain.class
+de\crafttogether\tcportals\listener\PlayerSpawnListener.class
 de\crafttogether\tcportals\signactions\SignActionPortal.class
 de\crafttogether\tcportals\net\packets\EntityPacket.class
 de\crafttogether\tcportals\portals\PortalQueue.class

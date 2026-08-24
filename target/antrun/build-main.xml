@@ -2,6 +2,6 @@
 <project name="maven-antrun-" default="main">
   <target name="main">
     <mkdir dir="target/static" />
-    <copy file="target/TCPortals-1.0-BETA4.jar" tofile="target/static/TCPortals.jar" overwrite="true" />
+    <copy file="target/TCPortals-1.1.1-SNAPSHOT.jar" tofile="target/static/TCPortals.jar" overwrite="true" />
   </target>
 </project>

@@ -42,6 +42,11 @@
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="papermc" />
+      <option name="name" value="papermc" />
+      <option name="url" value="https://repo.papermc.io/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="ctogether" />
       <option name="name" value="ctogether" />
       <option name="url" value="https://maven.craft-together-mc.de/" />

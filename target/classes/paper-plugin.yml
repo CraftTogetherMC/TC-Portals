@@ -1,0 +1,55 @@
+name: TCPortals
+version: 1.1.1-SNAPSHOT
+main: de.crafttogether.TCPortals
+description: TrainCarts-Addon for cross-server teleporting of trains (BungeeCord)
+api-version: "1.21"
+authors:
+  - J0schlZ
+  - Ceddix
+  - StonDragonlp
+website: https://github.com/CraftTogetherMC
+
+dependencies:
+  server:
+    CTCommonsBukkit:
+      required: true
+      load: BEFORE
+    BKCommonLib:
+      required: true
+      load: BEFORE
+    Train_Carts:
+      required: true
+      load: BEFORE
+
+permissions:
+  tcportals.admin:
+    description: Full access to all TC-Portals features
+    default: op
+    children:
+      tcportals.sign.portal: true
+      tcportals.sign.portal-in: true
+      tcportals.sign.portal-out: true
+      tcportals.command.reload: true
+      tcportals.command.list: true
+      tcportals.command.ping: true
+      tcportals.command.debug: true
+      tcportals.portal.use.directional: true
+      tcportals.portal.use.bidirectional: true
+  tcportals.sign.portal:
+    default: op
+  tcportals.sign.portal-in:
+    default: op
+  tcportals.sign.portal-out:
+    default: op
+  tcportals.command.reload:
+    default: op
+  tcportals.command.list:
+    default: op
+  tcportals.command.ping:
+    default: op
+  tcportals.command.debug:
+    default: op
+  tcportals.portal.use.directional:
+    default: true
+  tcportals.portal.use.bidirectional:
+    default: true
