@@ -28,29 +28,29 @@ public final class TCPortals extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        platformLayer = new BukkitPlatformLayer(this);
 
         PluginManager pluginManager = getServer().getPluginManager();
-        
-        /* Check dependencies */
+
+        /* Check dependencies before using any of their classes */
         if (!pluginManager.isPluginEnabled("CTCommonsBukkit")) {
-            plugin.getLogger().warning("Couldn't find plugin: CTCommonsBukkit");
+            plugin.getLogger().severe("[TCPortals] Required dependency 'CTCommonsBukkit' was not found or is not enabled! Disabling plugin.");
             pluginManager.disablePlugin(plugin);
             return;
         }
 
-        /* Check dependencies */
         if (!pluginManager.isPluginEnabled("BKCommonLib")) {
-            plugin.getLogger().warning("Couldn't find BKCommonLib");
+            plugin.getLogger().severe("[TCPortals] Required dependency 'BKCommonLib' was not found or is not enabled! Disabling plugin.");
             pluginManager.disablePlugin(plugin);
             return;
         }
 
         if (!pluginManager.isPluginEnabled("Train_Carts")) {
-            plugin.getLogger().warning("Couldn't find TrainCarts");
+            plugin.getLogger().severe("[TCPortals] Required dependency 'Train_Carts' was not found or is not enabled! Disabling plugin.");
             pluginManager.disablePlugin(plugin);
             return;
         }
+
+        platformLayer = new BukkitPlatformLayer(this);
 
         // Create default config
         saveDefaultConfig();
